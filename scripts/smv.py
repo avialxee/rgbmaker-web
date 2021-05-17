@@ -25,8 +25,6 @@ matplotlib.rcParams['font.size']=15
 #import cProfile, pstats
 #pr = cProfile.Profile()
 #pr.enable()
-## ... do something ...
-
 
 
 
@@ -216,7 +214,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
   uri=""
   info=""
   imglt=[]
-
+  wcs=None
 
   ##########=============######## 1. PLOTTING  RGBC #########=================#####
   if int(imagesopt) == 1 :
@@ -340,71 +338,75 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
         info = "problem while downloading"
         print(info)
         pass
-    tgss=fitsimg[0]
-    nvss=fitsimg[1]
-    first=fitsimg[2]
-    dss2r=fitsimg[3]
+    if wcs!= None :
+      tgss=fitsimg[0]
+      nvss=fitsimg[1]
+      first=fitsimg[2]
+      dss2r=fitsimg[3]
 
-    ######==== 2. PLOTTING SINGLE SURVEY====#####
+      ######==== 2. PLOTTING SINGLE SURVEY====#####
 
-    # plots initialization
-    img1, lvlc1 = overlayc(tgss,dss2r,nvss, tgss, levelc, 0.015)
-    if tgss.max() > 0.015 :
-        lvlct = np.arange(0.015, tgss.max(),((tgss.max() - 0.015)/levelc))
+      # plots initialization
+      img1, lvlc1 = overlayc(tgss,dss2r,nvss, tgss, levelc, 0.015)
+      if tgss.max() > 0.015 :
+          lvlct = np.arange(0.015, tgss.max(),((tgss.max() - 0.015)/levelc))
+      else :
+          lvlct=None
+      if first.max() > 0.0005 :
+          lvlcf = np.arange(0.0005, first.max(),((first.max() - 0.0005)/levelc))
+      else :
+          lvlcf=None
+      if nvss.max() > 0.0015 :
+          lvlcn = np.arange(0.0015, nvss.max(),((nvss.max() - 0.0015)/levelc))
+      else :
+          lvlcn=None
+          
+
+      # plotting
+
+      plt.ioff()
+      fig = plt.figure(figsize=(20, 20))
+      
+      # RGBC plot
+      ax1 = fig.add_subplot(1,2,1, projection=wcs) 
+      ax1.axis( 'off')    
+      ax1.imshow(img1) 
+      ax1.annotate("#RADatHomeIndia",(10,10),color='white')
+      ax1.annotate("By " + str(name),(470-5*len(name),10),color='white')
+      ax1.set_autoscale_on(False)
+      ax1.contour(tgss, lvlc1, colors='white')
+      
+      # Single Survey plot
+      dss2r = sqrt(dss2r,scale_min=0.5*np.std(dss2r),scale_max=np.max(dss2r))
+      ax2 = fig.add_subplot(1,2,2, projection=wcs)
+      ax2.axis( 'off')    
+      ax2.imshow(dss2r, origin='lower', cmap='gist_gray') 
+      ax2.annotate("#RADatHomeIndia",(10,10),color='white')
+      ax2.annotate("By " + str(name),(470-5*len(name),10),color='white')
+      ax2.set_autoscale_on(False)
+      ax2.contour(nvss, levels=lvlcn, colors='blue')
+      ax2.contour(tgss, lvlct, colors='magenta')
+      ax2.contour(first, lvlcf, colors='yellow')
+      leg1 = mpatches.Patch(color='blue', label='NVSS')
+      leg2 = mpatches.Patch(color='magenta', label='TGSS')
+      leg3 = mpatches.Patch(color='yellow', label='FIRST')
+      plt.legend(handles=[leg1,leg2,leg3])
+
+
+
+
+      ############ Saving final plot #####################
+      buf = io.BytesIO()
+      fig.savefig(buf, format='png',bbox_inches='tight', transparent=True, pad_inches=0)
+      buf.seek(0)
+      string = base64.b64encode(buf.read())
+      plt.close()
+      uri = 'data:image/png;base64,' + urllib.parse.quote(string)
+      time_taken=perf_counter()-start
+      info = 'completed in ' + str(np.round (time_taken,3))
     else :
-        lvlct=None
-    if first.max() > 0.0005 :
-        lvlcf = np.arange(0.0005, first.max(),((first.max() - 0.0005)/levelc))
-    else :
-        lvlcf=None
-    if nvss.max() > 0.0015 :
-        lvlcn = np.arange(0.0015, nvss.max(),((nvss.max() - 0.0015)/levelc))
-    else :
-        lvlcn=None
-        
-
-    # plotting
-
-    plt.ioff()
-    fig = plt.figure(figsize=(20, 20))
-    
-    # RGBC plot
-    ax1 = fig.add_subplot(1,2,1, projection=wcs) 
-    ax1.axis( 'off')    
-    ax1.imshow(img1) 
-    ax1.annotate("#RADatHomeIndia",(10,10),color='white')
-    ax1.annotate("By " + str(name),(470-5*len(name),10),color='white')
-    ax1.set_autoscale_on(False)
-    ax1.contour(tgss, lvlc1, colors='white')
-    
-    # Single Survey plot
-    dss2r = sqrt(dss2r,scale_min=0.5*np.std(dss2r),scale_max=np.max(dss2r))
-    ax2 = fig.add_subplot(1,2,2, projection=wcs)
-    ax2.axis( 'off')    
-    ax2.imshow(dss2r, origin='lower', cmap='gist_gray') 
-    ax2.annotate("#RADatHomeIndia",(10,10),color='white')
-    ax2.annotate("By " + str(name),(470-5*len(name),10),color='white')
-    ax2.set_autoscale_on(False)
-    ax2.contour(nvss, levels=lvlcn, colors='blue')
-    ax2.contour(tgss, lvlct, colors='magenta')
-    ax2.contour(first, lvlcf, colors='yellow')
-    leg1 = mpatches.Patch(color='blue', label='NVSS')
-    leg2 = mpatches.Patch(color='magenta', label='TGSS')
-    leg3 = mpatches.Patch(color='yellow', label='FIRST')
-    plt.legend(handles=[leg1,leg2,leg3])
-
-
-
-
-    ############ Saving final plot #####################
-    buf = io.BytesIO()
-    fig.savefig(buf, format='png',bbox_inches='tight', transparent=True, pad_inches=0)
-    buf.seek(0)
-    string = base64.b64encode(buf.read())
-    plt.close()
-    uri = 'data:image/png;base64,' + urllib.parse.quote(string)
-    time_taken=perf_counter()-start
-    info = 'completed in ' + str(np.round (time_taken,3))
+      info = " But no images found"
+      uri = ""
 
   return "success", uri, info
 
