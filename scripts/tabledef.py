@@ -7,7 +7,9 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 # Local
-SQLALCHEMY_DATABASE_URI = 'sqlite:///accounts.db'
+db_path = os.path.join(os.path.dirname(__file__), '..\\accounts.db')
+db_uri = 'sqlite:///{}'.format(db_path)
+SQLALCHEMY_DATABASE_URI = db_uri
 
 # Heroku
 #SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']

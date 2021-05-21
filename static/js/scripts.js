@@ -13,7 +13,7 @@ function error(type) {
 var login = function() {
   $.post({
     type: "POST",
-    url: "/",
+    url: $LOGIN,
     data: {"username": $("#login-user").val(), 
            "password": $("#login-pass").val()},
     success(response){
