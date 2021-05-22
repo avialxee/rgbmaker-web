@@ -1,6 +1,6 @@
 org: avialxee
 app: sky-rad
-service: sky-rad
+service: my-aws-python-flask-api-app
 
 frameworkVersion: '2'
 
