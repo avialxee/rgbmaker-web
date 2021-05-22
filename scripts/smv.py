@@ -310,7 +310,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       dec=viz[0]['DEJ2000']*ut.deg
       #cs=coordinates.SkyCoord(ra,dec,frame='fk5')
       ax1.scatter(ra, dec, transform=ax1.get_transform('fk5'), s=300,
-           edgecolor='white', color='yellow', zorder=3, marker='1', alpha=1, label='TGSS Catalogue')
+           edgecolor='white', color='yellow', zorder=3, marker='1', alpha=1, label='TGSS Catalog')
       ax1.legend(facecolor='white', framealpha=0.5, labelcolor='yellow')
       ax1.autoscale(False)
       
