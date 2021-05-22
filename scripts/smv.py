@@ -1,5 +1,6 @@
-from astroquery.skyview import SkyView
+
 from astroquery.nvas import Nvas
+from astroquery.vizier import Vizier
 
 from warnings import simplefilter
 from astropy.io import fits as fts
@@ -8,6 +9,7 @@ from astropy.wcs import WCS
 from time import perf_counter
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+#from regions import EllipseSkyRegion as esr
 
 import numpy as np
 import math
@@ -15,6 +17,7 @@ import io
 import urllib, base64
 import matplotlib
 from scripts import multipool
+#import multipool
 matplotlib.rcParams['font.size']=15
 #import cProfile, pstats
 #pr = cProfile.Profile()
@@ -261,8 +264,19 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       first=rftsget[2][0]
       dss2r=rftsget[3][0]
 
-            ######==== 2. PLOTTING SINGLE SURVEY====#####
+            ######==== 2. Vizier access for TGSS catalog ====#####
+      blobM,blobm,pa,ra,dec=([],)*5
+      viz = Vizier.query_region(c,radius=2*ut.arcmin, catalog='J/A+A/598/A78/table3')
+      for i in range(len(viz[0])):
+        blobM.append(viz[0]['Maj'][i])
+        blobm.append(viz[0]['Min'][i])
+        pa.append(viz[0]['PA'][i])
+        ra.append(viz[0]['RAJ2000'][i])
+        dec.append(viz[0]['DEJ2000'][i])
+        
 
+            ######==== 2. PLOTTING SINGLE SURVEY====#####
+      print(viz[0]['RAJ2000'][0],ra[0])
       # plots initialization
       img1, lvlc1 = overlayc(tgss,dss2r,nvss, tgss, levelc, 0.015)
       if tgss.max() > 0.015 :
@@ -292,7 +306,15 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       ax1.annotate("By " + str(name),(400-5*len(name),10),color='white')
       ax1.set_autoscale_on(False)
       ax1.contour(tgss, lvlc1, colors='white')
+      ra=viz[0]['RAJ2000']*ut.deg
+      dec=viz[0]['DEJ2000']*ut.deg
+      #cs=coordinates.SkyCoord(ra,dec,frame='fk5')
+      ax1.scatter(ra, dec, transform=ax1.get_transform('fk5'), s=300,
+           edgecolor='white', color='yellow', zorder=3, marker='1', alpha=1, label='TGSS Catalogue')
+      ax1.legend(facecolor='white', framealpha=0.5, labelcolor='yellow')
+      ax1.autoscale(False)
       
+
       # Single Survey plot
       dss2r = sqrt(dss2r,scale_min=0.5*np.std(dss2r),scale_max=np.max(dss2r))
       ax2 = fig.add_subplot(1,2,2, projection=wcs)
@@ -301,16 +323,20 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       ax2.annotate("#RADatHomeIndia",(10,10),color='white')
       ax2.annotate("By " + str(name),(400-5*len(name),10),color='white')
       ax2.set_autoscale_on(False)
+      
       ax2.contour(nvss, levels=lvlcn, colors='blue')
       ax2.contour(tgss, lvlct, colors='magenta')
       ax2.contour(first, lvlcf, colors='yellow')
+      
       leg1 = mpatches.Patch(color='blue', label='NVSS')
       leg2 = mpatches.Patch(color='magenta', label='TGSS')
       leg3 = mpatches.Patch(color='yellow', label='FIRST')
+      ax2.legend(handles=[leg1,leg2,leg3], labelcolor='linecolor', framealpha=0.5,)
+      ax2.autoscale(False)
+      
       plt.subplots_adjust(wspace=0.01,hspace=0.01)
-      plt.legend(handles=[leg1,leg2,leg3])
-
-
+      #esky = esr(cs, height=blobM[0]*ut.arcsec, width=blobm[0]*ut.arcsec, angle=pa[0]*ut.arcsec)
+      #sky_pix.plot()
 
 
       ############ Saving final plot #####################

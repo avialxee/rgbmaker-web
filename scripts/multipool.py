@@ -20,7 +20,6 @@ def run_imgl_pool(c,r,issvys,sam,cache):
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers = 2) as executor:
             result =[0]*len(issvys)
-            print(result)
             try :
                 imglt = [executor.submit(get_imgl_pool, [c,issvys[ind],r,sam[ind],result,ind,cache]) for ind in range(len(issvys))]
             except Exception as e:

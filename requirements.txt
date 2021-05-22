@@ -9,5 +9,6 @@ ipywidgets
 numpy
 matplotlib
 astropy
+regions
 astroquery
 scipy
