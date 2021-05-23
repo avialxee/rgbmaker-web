@@ -266,12 +266,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
 
             ######==== 2. Vizier access for TGSS catalog ====#####
       nra,ndec,tra,tdec=([],)*4
-      tviz = Vizier.query_region(c,radius=2*ut.arcmin, catalog='J/A+A/598/A78/table3')
-      nviz = Vizier.query_region(c,radius=2*ut.arcmin, catalog='VIII/65/nvss')
-      tra=tviz[0]['RAJ2000']*ut.deg
-      tdec=tviz[0]['DEJ2000']*ut.deg
-      nra=coordinates.Angle(nviz[0]['RAJ2000'], unit=ut.hour).deg
-      ndec=coordinates.Angle(nviz[0]['DEJ2000'], unit=ut.deg).deg
+      
       #print(nra,ndec)
             ######==== 2. PLOTTING SINGLE SURVEY====#####
       
@@ -305,49 +300,66 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       ax1.set_autoscale_on(False)
       ax1.contour(tgss, lvlc1, colors='white')
       
-      #cs=coordinates.SkyCoord(ra,dec,frame='fk5')
-      ax1.scatter(tra, tdec, transform=ax1.get_transform('fk5'), s=300,
-           edgecolor='yellow', color='gold', zorder=4, marker='1', alpha=1, label='TGSS Catalog')
-      ax1.scatter(nra, ndec, transform=ax1.get_transform('fk5'), s=300,
-           edgecolor='springgreen', color='none', zorder=3, marker='.', label='NVSS Catalog')
-      ax1.legend(framealpha=0.0,labelcolor='white')
-      ax1.autoscale(False)
-      
+      try:
+        try:
+        
 
-      # Single Survey plot
-      dss2r = sqrt(dss2r,scale_min=0.5*np.std(dss2r),scale_max=np.max(dss2r))
-      ax2 = fig.add_subplot(1,2,2, projection=wcs)
-      ax2.axis( 'off')    
-      ax2.imshow(dss2r, origin='lower', cmap='gist_gray') 
-      ax2.annotate("#RADatHomeIndia",(10,10),color='white')
-      ax2.annotate("By " + str(name),(400-5*len(name),10),color='white')
-      ax2.set_autoscale_on(False)
-      
-      ax2.contour(nvss, levels=lvlcn, colors='blue')
-      ax2.contour(tgss, lvlct, colors='magenta')
-      ax2.contour(first, lvlcf, colors='yellow')
-      
-      leg1 = mpatches.Patch(color='blue', label='NVSS')
-      leg2 = mpatches.Patch(color='magenta', label='TGSS')
-      leg3 = mpatches.Patch(color='yellow', label='FIRST')
-      ax2.legend(handles=[leg1,leg2,leg3], labelcolor='linecolor', framealpha=0.0,)
-      ax2.autoscale(False)
-      
-      plt.subplots_adjust(wspace=0.01,hspace=0.01)
-      #esky = esr(cs, height=blobM[0]*ut.arcsec, width=blobm[0]*ut.arcsec, angle=pa[0]*ut.arcsec)
-      #sky_pix.plot()
+          tviz = Vizier.query_region(c,r, catalog='J/A+A/598/A78/table3')
+          tra=tviz[0]['RAJ2000']*ut.deg
+          tdec=tviz[0]['DEJ2000']*ut.deg
+          ax1.scatter(tra, tdec, transform=ax1.get_transform('fk5'), s=300,
+            edgecolor='yellow', color='gold', zorder=4, marker='1', alpha=1, label='TGSS Catalog')
+        
+        finally:
+          nviz = Vizier.query_region(c,r, catalog='VIII/65/nvss')
+          nra=coordinates.Angle(nviz[0]['RAJ2000'], unit=ut.hour).deg
+          ndec=coordinates.Angle(nviz[0]['DEJ2000'], unit=ut.deg).deg
+          ax1.scatter(nra, ndec, transform=ax1.get_transform('fk5'), s=300,
+            edgecolor='cyan', color='none', zorder=3, marker='.', label='NVSS Catalog')
+        
+        #cs=coordinates.SkyCoord(ra,dec,frame='fk5')
+        
+      except:
+        info=" Catalog data missing!"
+      finally:
+        ax1.legend(framealpha=0.0,labelcolor='white')
+        
+        # Single Survey plot
+        dss2r = sqrt(dss2r,scale_min=0.5*np.std(dss2r),scale_max=np.max(dss2r))
+        ax2 = fig.add_subplot(1,2,2, projection=wcs)
+        ax2.axis( 'off')    
+        ax2.imshow(dss2r, origin='lower', cmap='gist_gray') 
+        ax2.annotate("#RADatHomeIndia",(10,10),color='white')
+        ax2.annotate("By " + str(name),(400-5*len(name),10),color='white')
+        ax2.set_autoscale_on(False)
+        
+        ax2.contour(nvss, levels=lvlcn, colors='blue')
+        ax2.contour(tgss, lvlct, colors='magenta')
+        ax2.contour(first, lvlcf, colors='yellow')
+        
+        leg1 = mpatches.Patch(color='blue', label='NVSS')
+        leg2 = mpatches.Patch(color='magenta', label='TGSS')
+        leg3 = mpatches.Patch(color='yellow', label='FIRST')
+        leg4 = mpatches.Patch(color='grey', label='DSS2R')
+        print(leg4)
+        ax2.legend(handles=[leg1,leg2,leg3,leg4], labelcolor='linecolor', framealpha=0.0,)
+        ax2.autoscale(False)
+        
+        plt.subplots_adjust(wspace=0.01,hspace=0.01)
+        #esky = esr(cs, height=blobM[0]*ut.arcsec, width=blobm[0]*ut.arcsec, angle=pa[0]*ut.arcsec)
+        #sky_pix.plot()
 
 
-      ############ Saving final plot #####################
-      buf = io.BytesIO()
-      fig.savefig(buf, format='png',bbox_inches='tight', transparent=True, pad_inches=0)
-      buf.seek(0)
-      string = base64.b64encode(buf.read())
-      plt.close()
-      uri = 'data:image/png;base64,' + urllib.parse.quote(string)
-      time_taken=perf_counter()-start
-      info = 'completed in ' + str(np.round (time_taken,3))+". "
-      status = "success"
+        ############ Saving final plot #####################
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png',bbox_inches='tight', transparent=True, pad_inches=0)
+        buf.seek(0)
+        string = base64.b64encode(buf.read())
+        plt.close()
+        uri = 'data:image/png;base64,' + urllib.parse.quote(string)
+        time_taken=perf_counter()-start
+        info = 'completed in ' + str(np.round (time_taken,3))+". "
+        status = "success"
     else :
       info = " No images found."
       uri = ""

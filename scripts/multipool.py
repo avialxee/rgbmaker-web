@@ -8,10 +8,10 @@ def get_imgl_pool(cals):
     
     try:
         imglr = skv.get_images(c, svy, pixels="480", radius=r, scaling="Sqrt", sampler=sam, cache=cach)
-        print('Fetched %s from %s' % (len(imglr), ind))
+        #print('Fetched %s from %s' % (len(imglr), ind))
         queue[ind] = imglr
     except :
-        print("inside error" + str(ind))
+        #print("inside error" + str(ind))
         pass
             
     
