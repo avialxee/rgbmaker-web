@@ -341,7 +341,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
         leg2 = mpatches.Patch(color='magenta', label='TGSS')
         leg3 = mpatches.Patch(color='yellow', label='FIRST')
         leg4 = mpatches.Patch(color='grey', label='DSS2R')
-        print(leg4)
+        
         ax2.legend(handles=[leg1,leg2,leg3,leg4], labelcolor='linecolor', framealpha=0.0,)
         ax2.autoscale(False)
         
