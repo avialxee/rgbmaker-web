@@ -265,18 +265,16 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       dss2r=rftsget[3][0]
 
             ######==== 2. Vizier access for TGSS catalog ====#####
-      blobM,blobm,pa,ra,dec=([],)*5
-      viz = Vizier.query_region(c,radius=2*ut.arcmin, catalog='J/A+A/598/A78/table3')
-      for i in range(len(viz[0])):
-        blobM.append(viz[0]['Maj'][i])
-        blobm.append(viz[0]['Min'][i])
-        pa.append(viz[0]['PA'][i])
-        ra.append(viz[0]['RAJ2000'][i])
-        dec.append(viz[0]['DEJ2000'][i])
-        
-
+      nra,ndec,tra,tdec=([],)*4
+      tviz = Vizier.query_region(c,radius=2*ut.arcmin, catalog='J/A+A/598/A78/table3')
+      nviz = Vizier.query_region(c,radius=2*ut.arcmin, catalog='VIII/65/nvss')
+      tra=tviz[0]['RAJ2000']*ut.deg
+      tdec=tviz[0]['DEJ2000']*ut.deg
+      nra=coordinates.Angle(nviz[0]['RAJ2000'], unit=ut.hour).deg
+      ndec=coordinates.Angle(nviz[0]['DEJ2000'], unit=ut.deg).deg
+      #print(nra,ndec)
             ######==== 2. PLOTTING SINGLE SURVEY====#####
-      print(viz[0]['RAJ2000'][0],ra[0])
+      
       # plots initialization
       img1, lvlc1 = overlayc(tgss,dss2r,nvss, tgss, levelc, 0.015)
       if tgss.max() > 0.015 :
@@ -300,18 +298,19 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       
       # RGBC plot
       ax1 = fig.add_subplot(1,2,1, projection=wcs) 
-      ax1.axis( 'off')    
+      ax1.axis('off')    
       ax1.imshow(img1) 
       ax1.annotate("#RADatHomeIndia",(10,10),color='white')
       ax1.annotate("By " + str(name),(400-5*len(name),10),color='white')
       ax1.set_autoscale_on(False)
       ax1.contour(tgss, lvlc1, colors='white')
-      ra=viz[0]['RAJ2000']*ut.deg
-      dec=viz[0]['DEJ2000']*ut.deg
+      
       #cs=coordinates.SkyCoord(ra,dec,frame='fk5')
-      ax1.scatter(ra, dec, transform=ax1.get_transform('fk5'), s=300,
-           edgecolor='white', color='yellow', zorder=3, marker='1', alpha=1, label='TGSS Catalog')
-      ax1.legend(facecolor='white', framealpha=0.5, labelcolor='yellow')
+      ax1.scatter(tra, tdec, transform=ax1.get_transform('fk5'), s=300,
+           edgecolor='yellow', color='gold', zorder=4, marker='1', alpha=1, label='TGSS Catalog')
+      ax1.scatter(nra, ndec, transform=ax1.get_transform('fk5'), s=300,
+           edgecolor='springgreen', color='none', zorder=3, marker='.', label='NVSS Catalog')
+      ax1.legend(framealpha=0.0,labelcolor='white')
       ax1.autoscale(False)
       
 
@@ -331,7 +330,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       leg1 = mpatches.Patch(color='blue', label='NVSS')
       leg2 = mpatches.Patch(color='magenta', label='TGSS')
       leg3 = mpatches.Patch(color='yellow', label='FIRST')
-      ax2.legend(handles=[leg1,leg2,leg3], labelcolor='linecolor', framealpha=0.5,)
+      ax2.legend(handles=[leg1,leg2,leg3], labelcolor='linecolor', framealpha=0.0,)
       ax2.autoscale(False)
       
       plt.subplots_adjust(wspace=0.01,hspace=0.01)

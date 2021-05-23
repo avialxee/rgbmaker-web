@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from wtforms.fields.simple import TextAreaField
-from scripts import tabledef,forms,helpers,smv
-from flask import Flask, redirect, url_for, render_template, request, session,flash, jsonify
-import json
-import sys
+#from wtforms.fields.simple import TextAreaField
+from scripts import forms,smv
+#,helpers,tabledef
+from flask import Flask, redirect, url_for, render_template, request, jsonify
+#,session,flash,
+#import json
+#import sys
 import os
 
-DEBUG = True
 app = Flask(__name__)
 app.secret_key = os.urandom(12)  # Generic key for dev purposes only
 
@@ -110,9 +111,9 @@ def query():
         return render_template('query.html', form=qform)
     #return redirect(url_for('login'))
 
-@app.route('/get-flashes')
-def get_flashes():
-    return render_template('_flashes.html')
+#@app.route('/get-flashes')
+#def get_flashes():
+#    return render_template('_flashes.html')
 
 
 # ======== Main ============================================================== #
