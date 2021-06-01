@@ -1,7 +1,6 @@
 from astroquery.skyview import SkyView as skv
 import concurrent.futures
 import numpy as np
-from numpy import insert
 def get_imgl_pool(cals):
     c, svy, r,sam,queue,ind,cach = cals
     # Some error in caching skyview at 600 px so using 480px

@@ -366,7 +366,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       status = "warning"
   
 
-  if int(archives) == 2 and c:
+  if archives and int(archives) == 2 and c:
       
       #  NVAS
       try :

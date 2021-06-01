@@ -8,8 +8,11 @@ from flask import Flask, redirect, url_for, render_template, request, jsonify
 #import json
 #import sys
 import os
+from flask_restful import reqparse, abort, Api, Resource
+
 
 app = Flask(__name__)
+api = Api(app)
 app.secret_key = os.urandom(12)  # Generic key for dev purposes only
 
 # Heroku
@@ -21,99 +24,61 @@ app.secret_key = os.urandom(12)  # Generic key for dev purposes only
 @app.route('/', methods=['GET', 'POST'])
 def login():
     return redirect(url_for('query'))
-#def login():
-#    if not session.get('logged_in'):
-#        form = forms.LoginForm(request.form)
-#        if request.method == 'POST':
-#            username = request.form['username'].lower()
-#            password = request.form['password']
-#            if form.validate():
-#                if helpers.credentials_valid(username, password):
-#                    session['logged_in'] = True
-#                    session['username'] = username
-#                    return json.dumps({'status': 'Login successful'})
-#                return json.dumps({'status': 'Invalid user/pass'})
-#            return json.dumps({'status': 'Both fields required'})
-#        return render_template('login.html', form=form)
-#    user = helpers.get_user()
-#    return render_template('home.html', user=user)
-#
-#
-#app.route("/logout")
-#ef logout():
-#   session['logged_in'] = False
-#   return redirect(url_for('login'))
-#
-#
-# -------- Signup ---------------------------------------------------------- #
-#app.route('/signup', methods=['GET', 'POST'])
-#ef signup():
-#   if not session.get('logged_in'):
-#       form = forms.LoginForm(request.form)
-#       if request.method == 'POST':
-#           username = request.form['username'].lower()
-#           password = helpers.hash_password(request.form['password'])
-#           email = request.form['email']
-#           if form.validate():
-#               if not helpers.username_taken(username):
-#                   helpers.add_user(username, password, email)
-#                   session['logged_in'] = True
-#                   session['username'] = username
-#                   return json.dumps({'status': 'Signup successful'})
-#               return json.dumps({'status': 'Username taken'})
-#           return json.dumps({'status': 'User/Pass required'})
-#       return render_template('login.html', form=form)
-#   return redirect(url_for('login'))
-#
-#
-# -------- Settings ---------------------------------------------------------- #
-#app.route('/settings', methods=['GET', 'POST'])
-#ef settings():
-#   if session.get('logged_in'):
-#       if request.method == 'POST':
-#           password = request.form['password']
-#           if password != "":
-#               password = helpers.hash_password(password)
-#           email = request.form['email']
-#           helpers.change_user(password=password, email=email)
-#           return json.dumps({'status': 'Saved'})
-#       user = helpers.get_user()
-#       return render_template('settings.html', user=user)
-#   return redirect(url_for('login'))
+
 
 # -------- Query ---------------------------------------------------------- #
 @app.route('/query', methods=['GET', 'POST'])
 def query():
-    
-    #if session.get('logged_in'):
-        qform = forms.QueryForm(request.form)
+    qform = forms.QueryForm(request.form)
+    if request.method == 'POST':
+        name=request.form['name']
+        position=request.form['position']
+        radius=request.form['radius']
+        archives=request.form['archives']
+        images=request.form['images']
+
         
-        if request.method == 'POST':
-            name=request.form['name']
-            position=request.form['position']
-            radius=request.form['radius']
-            archives=request.form['archives']
-            images=request.form['images']
-
+        if qform.validate():
+            info, uri, txt = smv.query(name,position,radius,archives,images)
+            try :
+                return jsonify([info,txt,uri]) 
+            except Exception as e :
+                return jsonify(success=0, error_msg=str(e))
+        else :
+            info = jsonify(['error','validation failed','#'])
             
-            if qform.validate():
-                info, uri, txt = smv.query(name,position,radius,archives,images)
-                try :
-                    return jsonify([info,txt,uri]) 
-                except Exception as e :
-                    return jsonify(success=0, error_msg=str(e))
-            else :
-                info = jsonify(['error','validation failed','#'])
-                
-        else:
-            info = jsonify(['info','Please enter coordinates','#'])
-    
-        return render_template('query.html', form=qform)
-    #return redirect(url_for('login'))
+    else:
+        info = jsonify(['info','Please enter coordinates','#'])
 
-#@app.route('/get-flashes')
-#def get_flashes():
-#    return render_template('_flashes.html')
+    return render_template('query.html', form=qform)
+
+
+
+##-----------==============         API for accessing RGBMaker       ========-----------##
+
+@app.route('/home/<string:num>', methods = ['GET'])
+def disp(num):
+    info, uri, txt = smv.query(position=num)
+    return jsonify({'info': info, 'message': txt, 'url':uri})
+
+parse = reqparse.RequestParser()
+parse.add_argument('position')
+parse.add_argument('radius')
+parse.add_argument('imagesopt')
+parse.add_argument('archives')
+parse.add_argument('name')
+
+
+
+class RGBMaker(Resource):
+    def post(self):
+        arg= parse.parse_args()
+        info, uri, txt = smv.query(name=arg['name'],position=arg['position'], radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
+        return {'info': info, 'message': txt, 'url':uri}, 200
+    def get(self):
+        return redirect(url_for('query'))
+api.add_resource(RGBMaker, '/api')
+
 
 
 # ======== Main ============================================================== #
