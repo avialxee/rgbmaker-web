@@ -12,3 +12,4 @@ astropy
 astroquery
 scipy
 flask_restful
+flask_cors

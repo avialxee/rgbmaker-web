@@ -8,13 +8,14 @@ from flask import Flask, redirect, url_for, render_template, request, jsonify
 #import json
 #import sys
 import os
+from flask_cors import CORS
 from flask_restful import reqparse, abort, Api, Resource
 
 
 app = Flask(__name__)
 api = Api(app)
 app.secret_key = os.urandom(12)  # Generic key for dev purposes only
-
+CORS(app)
 # Heroku
 #from flask_heroku import Heroku
 #heroku = Heroku(app)
