@@ -299,7 +299,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       ax1.annotate("By " + str(name),(400-5*len(name),10),color='white')
       ax1.set_autoscale_on(False)
       ax1.contour(tgss, lvlc1, colors='white')
-      
+      ax1.set_title("ROR with TGSS contour ",y=1,pad=-16,color="white")
       try:
         try:
         
@@ -333,14 +333,14 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
         ax2.annotate("By " + str(name),(400-5*len(name),10),color='white')
         ax2.set_autoscale_on(False)
         
-        ax2.contour(nvss, levels=lvlcn, colors='blue')
+        ax2.contour(nvss, lvlcn, colors='blue')
         ax2.contour(tgss, lvlct, colors='magenta')
         ax2.contour(first, lvlcf, colors='yellow')
         
         leg1 = mpatches.Patch(color='blue', label='NVSS')
         leg2 = mpatches.Patch(color='magenta', label='TGSS')
         leg3 = mpatches.Patch(color='yellow', label='FIRST')
-        leg4 = mpatches.Patch(color='grey', label='DSS2R')
+        leg4 = mpatches.Patch(color='white', label='DSS2R')
         
         ax2.legend(handles=[leg1,leg2,leg3,leg4], labelcolor='linecolor', framealpha=0.0,)
         ax2.autoscale(False)
