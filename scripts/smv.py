@@ -170,7 +170,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
   imglt=[]
   wcs=None
   status="info"
-
+  otext=[]
 ##########=============######## 0. COORDINATES CHECK #########=================#####
   try :
     c = coordinates.SkyCoord.from_name(position, frame='fk5')
@@ -205,7 +205,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       w22 = rftsget[5][0]
       gnuv = rftsget[6][0]
 
-
+      otext.append({'TGSSmax': str(tgss.max())})
+      otext.append({'NVSSmax': str(nvss.max())})
       ######==== 1. PLOTTING RGBC ====#####
 
       # plots initialization
@@ -264,6 +265,9 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       first=rftsget[2][0]
       dss2r=rftsget[3][0]
 
+      otext.append({'TGSSmax': str(tgss.max())})
+      otext.append({'NVSSmax': str(nvss.max())})
+      otext.append({'FIRSTmax':str( first.max())})
             ######==== 2. Vizier access for TGSS catalog ====#####
       nra,ndec,tra,tdec=([],)*4
       
@@ -367,27 +371,27 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
   
 
   if archives and int(archives) == 2 and c:
-      
+      text=""
       #  NVAS
       try :
           nvas_urls = Nvas.get_image_list(c,radius=2*ut.arcsec)
-          info += " " + str(len(nvas_urls)) + " Image(s) found in NVAS: "
+          text += " " + str(len(nvas_urls)) + \
+              " Image(s) found in NVAS: "
           i = 1
           for nvas in nvas_urls :
             if i<=5 :
-              info += " <a href='" + str(nvas)+ "'>["+ str(i) + "]</a>"
+              text += " <a href='" + str(nvas) + "'>[" + str(i) + "]</a>"
               i+=1
 
-          status = "success"
+          otext.append({'NVAS': text})
       except :
-          status = "warning"
-          info+=" NVAS has no image"
+          otext.append({'NVAS' : 'NVAS has no image'})
 #  else :
 #    #status=
 #    uri=""
 #    info="ERROR"
       
-  return status, uri, info
+  return status, uri, info, otext
 
 #  DEBUG :
 
