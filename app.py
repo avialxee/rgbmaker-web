@@ -40,9 +40,9 @@ def query():
 
         
         if qform.validate():
-            info, uri, txt = smv.query(name,position,radius,archives,images)
+            info, uri, txt, otext = smv.query(name,position,radius,archives,images)
             try :
-                return jsonify([info,txt,uri]) 
+                return jsonify([info,txt,uri,otext]) 
             except Exception as e :
                 return jsonify(success=0, error_msg=str(e))
         else :
@@ -74,8 +74,8 @@ parse.add_argument('name')
 class RGBMaker(Resource):
     def post(self):
         arg= parse.parse_args()
-        info, uri, txt = smv.query(name=arg['name'],position=arg['position'], radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
-        return {'info': info, 'message': txt, 'url':uri}, 200
+        info, uri, txt, otext = smv.query(name=arg['name'],position=arg['position'], radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
+        return {'info': info, 'message': txt, 'url':uri, 'brieftext':otext}, 200
     def get(self):
         return redirect(url_for('query'))
 api.add_resource(RGBMaker, '/api')
