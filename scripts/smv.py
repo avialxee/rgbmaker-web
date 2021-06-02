@@ -154,8 +154,9 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
 
   name = str(name)
   if len(name)<=2 :
-      name = "Anonymous"
-  
+    name = "Anonymous"
+  if len(name)>15:
+    name = name[:15]
   # initializing values
   pixels=480
   levelc=4
@@ -217,7 +218,6 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       # plotting
       plt.ioff()
       fig = plt.figure(figsize=(20, 20))
-      l6 = "images downloaded: drawing...."
       pl_RGB(2,2,1,wcs,nvss,lvlc1,img1,fig,name)
       pl_RGB(2,2,2,wcs,tgss,lvlc2,img2,fig,name)
       pl_RGB(2,2,3,wcs,tgss,lvlc2,img3,fig,name)
