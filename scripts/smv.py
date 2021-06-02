@@ -205,8 +205,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       w22 = rftsget[5][0]
       gnuv = rftsget[6][0]
 
-      otext.append({'TGSSmax': str(tgss.max())})
-      otext.append({'NVSSmax': str(nvss.max())})
+      otext.append({'TGSSmax': str(tgss.max())+' Jy'})
+      otext.append({'NVSSmax': str(nvss.max())+' Jy'})
       ######==== 1. PLOTTING RGBC ====#####
 
       # plots initialization
@@ -265,9 +265,9 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       first=rftsget[2][0]
       dss2r=rftsget[3][0]
 
-      otext.append({'TGSSmax': str(tgss.max())})
-      otext.append({'NVSSmax': str(nvss.max())})
-      otext.append({'FIRSTmax':str( first.max())})
+      otext.append({'TGSSmax': str(tgss.max())+' Jy'})
+      otext.append({'NVSSmax': str(nvss.max())+' Jy'})
+      otext.append({'FIRSTmax': str(first.max())+' Jy'})
             ######==== 2. Vizier access for TGSS catalog ====#####
       nra,ndec,tra,tdec=([],)*4
       

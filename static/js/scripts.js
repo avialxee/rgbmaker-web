@@ -100,6 +100,7 @@ $(document).ready(function () {
           $('#skv-output-status').show()
           $('#skv-output-otext').show()
           $('#skv-output-status').addClass(stats);
+          $('#skv-output-img').fadeIn().html('<img src="' + response[2] + '"/>');
           $('#skv-output-status').fadeIn().html('<strong >' + response[0] + '! </strong> ' + response[1]);
           var brief = response[3];
           for(var key in brief)
@@ -108,8 +109,6 @@ $(document).ready(function () {
             document.getElementById("skv-output-otext").innerHTML +='<strong>'+Object.keys(brief[key]) + "</strong> :" + value + '<br>';
           }
 
-          //$('#skv-output-status').fadeIn().html('<br> brief: <br>' + response[3][0]);
-          $('#skv-output-img').fadeIn().html('<img src="' + response[2] + '"/>');
           console.log(response[3][0]);
           console.log('completed');
         },
