@@ -380,7 +380,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
           i = 1
           for nvas in nvas_urls :
             if i<=5 :
-              text += " <a href='" + str(nvas) + "'>[" + str(i) + "]</a>"
+              text += " <a href='" + str(nvas) + "' target='_blank' rel='noreferrer noopener'>[" + str(i) + "]</a>"
               i+=1
 
           otext.append({'NVAS': text})
