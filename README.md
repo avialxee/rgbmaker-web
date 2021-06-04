@@ -9,7 +9,7 @@ The process to use the RAD RGB Maker tool is very simple. All you need are - you
 Let us go through the fields:
 + Name: Your name, so we know who made the image. Credits are important.
 + Object: The catalogue name (Ex: M87, NGC1243, etc.) or the coordinates of the object in the J2000 system (ex: 01 01 01, +01, 01 01).
-+ Size (Degrees): The size of the image in degrees. For reference, in the night sky, the moon is 0.25 degrees across.
++ Size (Degrees): The size of the image in degrees. For reference, in the night sky, the moon is 0.52 degrees across.
 + Images: This dropdown gives you a choice of the composite images you want to create. 
                     IOU ROR Optical: This option returns four images. 
                               1. There are two ROR (Radio (TGSS) - Optical (DSS2Red) - Radio (NVSS)) images. One with TGSS Contours and another with NVSS Contours. 
