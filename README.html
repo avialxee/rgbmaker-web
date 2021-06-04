@@ -1,85 +1,105 @@
-
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
-       
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
-<style>
-            .vscode-body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
-                font-size: 14px;
-                line-height: 1.6;
-            }
-        </style>
-        <style>
-.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
-</style>
-        
-        
-        
-    </head>
-    <body class="vscode-body vscode-light">
-        <h3 id="what-is-iou-ror-and-rgb">What is IOU ROR and RGB?</h1>
-<p><em>RAD-RGB images are false coloured images of the astronomical objects.</em></p>
-<p>Astronomical study involves a multiwavelength analysis of the object from radio part of the spectrum to x-rays. Astronomers access these data from telescope through various archival data services which are <a href="https://en.wikipedia.org/wiki/Astronomical_survey">sky survey</a> data on a particular wavelength. Each RGB image is a combination of these survey data in Red, Green and Blue colour channels, with their respective intensities at each pixel, resulting in a false coloured image. Usually the wavelength in each channel is in decreasing order <em>i.e</em> survey in red channel has wavelength higher than green and green has wavelength greater than blue.</p>
-<p><em>The two widely used RAD-RGB images in our analysis are:</em></p>
-<ul>
+<body class="vscode-body vscode-light">
+  <h2 id="what-are-iou-ror-and-rgb">What are IOU ROR and RGB?</h2>
+  <p><em>RAD-RGB images are false-colored images of astronomical objects.</em></p>
+  <p>The astronomical study involves a multiwavelength analysis of the object from the radio part of the spectrum to
+    x-rays. Astronomers access these data from various archival data services which are <a
+      href="https://en.wikipedia.org/wiki/Astronomical_survey">sky survey</a> data on a particular wavelength of a
+    telescope. Each RGB image is a combination of these survey data in Red, Green, and Blue color channels, with their
+    respective intensities at each pixel, resulting in a false-colored image. Usually, the surveys are selected so that
+    the wavelength of each channel is in decreasing order i.e survey in the red channel has a wavelength higher than
+    green and green has a wavelength greater than blue.</p>
+  <p><em>The two widely used RAD-RGB images in our analysis are:</em></p>
+  <ul>
     <li>
-        <h4 id="iou">IOU</h4>
-        <p>These are Infra Red - Optical - Ultra Violet, RAD-RGB images <em>i.e</em> the red channel has infrared data (WISE 22) , green channel has optical data (DSS2 R) and blue channel has UV data (GalexNUV) at each pixel.</p>
+      <h4 id="iou">IOU</h4>
+      These are Infrared - Optical - Ultraviolet, RAD-RGB images <em>i.e</em> the red channel has IR data (WISE 22), the
+      green channel has data at the optical visible wavelength (DSS2 R) and the blue channel has UV data (GalexNUV) at
+      each pixel.
     </li>
     <li>
-        <h4 id="ror">ROR</h4>
-        <p>These are Radio-Optical-Radio RAD-RGB images <em>i.e</em> the red channel has radio data of higher wavelength (TGSS ADR1) , green channel has optical data (DSS2 R) and blue channel has radio data of lower wavelength (VLA NVSS) at each pixel.</p>
+      <h4 id="ror">ROR</h4>
+      These are Radio-Optical-Radio RAD-RGB images <em>i.e</em> the red channel has radio data of higher wavelength
+      (TGSS ADR1), the green channel has optical data (DSS2 R) and the blue channel has radio data of lower wavelength
+      (VLA NVSS) at each pixel.
     </li>
-</ul>
+  </ul>
+  <h2 id="how-to-use-the-rad-rgb-maker-tool">How to use the RAD-RGB Maker Tool:</h2>
+  <p>RAD-RGB Maker Tool is a very simple to use tool. All you need is the name of the astronomical object of interest or
+    its coordinates, the radius of the image search scope, and what sort of images you would like to make.</p>
+  <p><em>Here is a brief description of each label provided in the form:</em></p>
+  <ul>
+    <li>
+      <h4 id="name-optional">Name (Optional)</h4>
+      <p>Your name will be displayed on the image enabling mentors, professors, fellow students to be able to recognize
+        your work. Credit is important!</p>
+    </li>
+    <li>
+      <h4 id="position-required">Position (Required)</h4>
+      <p>The object name or the coordinates of the object in the FK5 (J2000) system. Ex: &quot;14 09 48.86 -03 02
+        32.6&quot;, M87, NGC1243, without quotes.</p>
+    </li>
+    <li>
+      <h4 id="radius-required">Radius (Required)</h4>
+      <p>The size of the image in degrees, this size will be used for the <a
+          href="https://en.wikipedia.org/wiki/Field_of_view">field of view</a> in the resultant image. For reference, in
+        the night sky, the moon is about 0.52 degrees across.</p>
+    </li>
+    <li>
+      <h4 id="images">Images</h4>
+      <p>This dropdown gives you a choice of the composite images you want to create.</p>
+      <span>
+        <h4 id="iou-ror-optical">IOU ROR Optical</h4>
+        <p><em>This option returns four images.</em></p>
+        <ul>
+          <li>
+            <p>There are two <a href="#what-is-iou-ror-and-rgb">ROR</a> <em>(Radio (TGSS ADR1) - Optical (DSS2Red) -
+                Radio
+                (NVSS))</em> images. One with TGSS Contours and another with NVSS Contours.</p>
+          </li>
+          <li>
+            <p>The third image is an <a href="#what-is-iou-ror-and-rgb">IOU</a> <em>(Infrared (WISE 22) - Optical (DSS2
+                Red) - Ultraviolet (Galex Near UV))</em> with TGSS Contours.</p>
+          </li>
+          <li>
+            <p>The final RGB image is an optical image with <em>(DSS2IR - DSS2Red - DSS2Blue)</em> with TGGSS Contours.
+            </p>
+          </li>
+        </ul>
+        <h4 id="composite-contours-on-dss2r">Composite Contours on DSS2R</h4>
+        <p><em>This option returns two images.</em></p>
+        <ul>
+          <li>
+            <p>The first is a <a href="#what-is-iou-ror-and-rgb">ROR</a> Image with TGSS contours. The various symbol
+              seen
+              on the image is the <a href="https://en.wikipedia.org/wiki/Astronomical_catalog">catalog</a> data of the
+              respective survey.</p>
+          </li>
+          <li>
+            <p>The second image is a composite image with DSS2Red background and contours of various radio surveys like
+              TGSS, NVSS, and VLA First (if available).</p>
+          </li>
+        </ul>
+      </span>
+    </li>
+    <li>
+      <h4 id="archives">Archives</h4>
+      <p>This dropdown currently offers access to the NVAS image archive. Selecting this option will return the top 5
+        results from NVAS (if exists). These can be downloaded as .imfits files (open with DS9) by using save as an
+        option when right-clicked.</p>
+    </li>
+    <li>
+      <h4 id="query">Query</h4>
+      <p>You are now finally ready to make your RAD-RGB image! Just press the button, give it a few seconds, and you
+        will have taken your first step in the RGB image analysis. The next and most important step in the analysis. All
+        the best for that!</p>
+    </li>
+  </ul>
+  <blockquote>
+    <p><em>Please check the RAD-RGB acknowledgment at the bottom of the page for further details</em> : <a
+        href="https://docs.google.com/document/d/1U5nkmCKOlgnDk4pO7d7HKj_OidH9IvXNfW9AojBc-s0/edit">RAD-RGB Maker Tool
+        Acknowledgement</a></p>
+  </blockquote>
 
+</body>
 
-<h3 id="how-to-use-the-rad-rgb-maker-tool">How to use the RAD-RGB Maker Tool:</h1>
-<p>RAD-RGB Maker Tool is very simple to use tool. All you need is the name of the astronomical object of interest or its coordinates, the radius of the image search scope, and what sort of images you would like to make.</p>
-<p><em>Here is a brief description of each labels provided in the form:</em></p>
-<ul>
-<li>
-<h4 id="name-optional">Name (Optional)</h4>
-<p>Your name, this will be displayed on the image enabling mentors, professors, fellow students to be able to recognize your work. Credit is important!</p>
-</li>
-<li>
-<h4 id="position-required">Position (Required)</h4>
-<p>The catalogue name (Ex: M87, NGC1243, etc.) or the coordinates of the object in the FK5 (J2000) system (ex: 01 01 01, +01, 01 01).</p>
-</li>
-<li>
-<h4 id="radius-required">Radius (Required)</h4>
-<p>The size of the image in degrees, this size will be used for the <a href="https://en.wikipedia.org/wiki/Field_of_view">field of view</a> in the resultant image. For reference, in the night sky, the moon is about 0.52 degrees across.</p>
-</li>
-<li>
-<h4 id="images">Images</h4>
-<p>This dropdown gives you a choice of the composite images you want to create.</p>
-<h4 id="iou-ror-optical">IOU ROR Optical</h4>
-<p><em>This option returns four images.</em></p>
-<ul>
-<li>There are two <a href="#what-is-iou-ror-and-rgb">ROR</a> <em>(Radio (TGSS ADR1) - Optical (DSS2Red) - Radio (NVSS))</em> images. One with TGSS Contours and another with NVSS Contours.</li>
-<li>The third image is an <a href="#what-is-iou-ror-and-rgb">IOU</a> <em>(Infrared (WISE 22) - Optical (DSS2 Red) - Ultraviolet (Galex Near UV))</em> with TGSS Contours.</li>
-<li>The final RGB image is an optical image with <em>(DSS2IR - DSS2Red - DSS2Blue)</em> with TGGSS Contours.</li>
-</ul>
-<h4 id="composite-contours-on-dss2r">Composite Contours on DSS2R</h4>
-<p><em>This option returns two images.</em></p>
-<ul>
-<li>The first is an ROR Image with TGSS contours. This image will however indicate TGSS and NVSS sources if they are seen by the Vizer catalogue.</li>
-<li>The second image is a composite image with DSS2Red background and contours of various radio surveys like TGSS, NVSS and VLA First (if available).</li>
-</ul>
-</li>
-<li>
-<h4 id="archives">Archives</h4>
-<p>This dropdown currently offers access to the NVAS image archive. Selecting this option will return the top 5 results from NVAS (if exists). These can be downloaded as .imfits files (open with DS9) by using save as option when right clicked.</p>
-</li>
-<li>
-<h4 id="query">Query</h4>
-<p>You are now finally ready to make your RAD-RGB image! Just press the button, give it a few seconds, and you will have taken your first step in the RGB image analysis. The next and most important step is the analysis. All the best for that!</p>
-</li>
-</ul>
-<blockquote>
-<p><em>Please check the RAD-RGB acknowledgement at the bottom of the page for further details</em> : <a href="https://docs.google.com/document/d/1U5nkmCKOlgnDk4pO7d7HKj_OidH9IvXNfW9AojBc-s0/edit">RAD-RGB Maker Tool Acknowledgement</a></p>
-</blockquote>
-
-    </body>
-    </html>
+</html>
