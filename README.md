@@ -1,3 +1,5 @@
+# sky-rad
+sky-rad is a python-based flask app for #RADatHomeIndia with various aimed capabilities (in progress) which includes the astronomical archival data fetching service for different wavelengths (aka RGBMaker Tool).
 
 ## What are IOU ROR and RGB?
 _RAD-RGB images are false-colored images of astronomical objects._
