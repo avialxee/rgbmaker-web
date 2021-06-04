@@ -164,6 +164,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
   c = None
   
   r = float(str(radius))*ut.degree
+  if r > 2.0 :
+    r = 2.0
   i=0
   uri=""
   info=""
