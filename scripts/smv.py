@@ -162,10 +162,10 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
   levelc=4
   start=perf_counter()
   c = None
-  
-  r = float(str(radius))*ut.degree
-  if r > 2.0 :
+  if float(str(radius)) > 2.0:
     r = 2.0
+  r = float(str(radius))*ut.degree
+
   i=0
   uri=""
   info=""
@@ -397,7 +397,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
 
 #  DEBUG :
 
-#print(query(position="speca"))
+#print(query(position="3c33.1"))
 #pr.disable()
 #s = io.StringIO()
 #sortby = 'cumulative'

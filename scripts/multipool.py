@@ -59,5 +59,5 @@ def getdd(c,r,insvys) :
 
 #from astropy import coordinates, units as ut
 #insvys=[['TGSS ADR1'],['NVSS','VLA FIRST (1.4 GHz)'],['DSS2 Red']]
-#c = coordinates.SkyCoord.from_name("speca", frame='fk5')
+#c = coordinates.SkyCoord.from_name("3c33.1", frame='fk5')
 #print(np.shape(getdd(c, 0.12*ut.degree, insvys)[0][0][0]))
