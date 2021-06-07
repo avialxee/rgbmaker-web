@@ -238,6 +238,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       status = "success"
     else :
       info = " No images found."
+      time_taken = perf_counter()-start
+      info += ' Time taken:' + str(np.round(time_taken, 3))+". "
       uri = ""
       status = "warning"
 
@@ -367,7 +369,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
         info = 'completed in ' + str(np.round (time_taken,3))+". "
         status = "success"
     else :
-      info = " No images found."
+      info = info or " No images found."
       uri = ""
       status = "warning"
   
