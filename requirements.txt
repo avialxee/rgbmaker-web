@@ -10,5 +10,5 @@ scipy
 gunicorn
 flask_restful
 flask_cors
-celery=5.0.5
+celery==5.0.5
 sqlalchemy
