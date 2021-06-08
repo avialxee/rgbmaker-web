@@ -1,10 +1,11 @@
 from astroquery.skyview import SkyView as skv
 import concurrent.futures
 import numpy as np
+imglt = []
+
 def get_imgl_pool(cals):
     c, svy, r,sam,queue,ind,cach = cals
     # Some error in caching skyview at 600 px so using 480px
-    
     try:
         imglr = skv.get_images(c, svy, pixels="480", radius=r, scaling="Sqrt", sampler=sam, cache=cach)
         #print('Fetched %s from %s' % (len(imglr), ind))
@@ -12,8 +13,8 @@ def get_imgl_pool(cals):
     except :
         #print("inside error" + str(ind))
         pass
-            
-    
+    return queue
+  
 def run_imgl_pool(c,r,issvys,sam,cache):
     
     try:
@@ -27,6 +28,17 @@ def run_imgl_pool(c,r,issvys,sam,cache):
     except Exception as e:
         raise  e 
 
+# ----------- removing use of thread pool concurrency -----------------#
+def run_imgl(c,r,issvys,sam,cache):
+    result = [0]*len(issvys)
+    error=None
+    try : 
+        for ind in range(len(issvys)):
+            imglt= get_imgl_pool([c, issvys[ind], r,sam[ind], result, ind, cache])
+    except Exception as e:
+        error = e
+    return imglt, error
+
 def getdd(c,r,insvys) :
     # CONSTANTS
     sam=[None,"Lanczos3",None]
@@ -35,27 +47,20 @@ def getdd(c,r,insvys) :
     for s in range(len(insvys)):
         pool_svys+=insvys[s]
         sam += [sam[s]]*len(insvys[s])
-    imgls, error = run_imgl_pool(c,r, pool_svys,sam,"True")
+    imgls, error = run_imgl(c,r, pool_svys,sam,"True")
     #if not error and len(imgls)==0:
     #    imgls, error = run_imgl_pool(c,r,pool_svys,sam,"False")
     # can also be included in run pool
-    
+    print(imgls)
     for i in range(len(imgls)) :
         if imgls[i]==0:
             imglt.insert(i,[np.zeros((480,480)),None])
         else:
             imglt.append([imgls[i][0][0].data, imgls[i][0][0].header])
-
-    # returns [[hdulist], error]
-    
-      
-
-
+    # returns [[hdulist], error]    
     return imglt, error
 
 # DEBUG
-
-#
 
 #from astropy import coordinates, units as ut
 #insvys=[['TGSS ADR1'],['NVSS','VLA FIRST (1.4 GHz)'],['DSS2 Red']]
