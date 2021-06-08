@@ -70,7 +70,8 @@ def taskstatus(idv):
     elif task.state == 'SUCCESS':
         info = task.info
         try:
-            deleteRecord(task.id)
+            print("success")
+            #deleteRecord(task.id)
         except:
             print("record not found for task")
     else:
