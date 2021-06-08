@@ -120,7 +120,7 @@ class RGBMaker(Resource):
     def post(self):
         arg = parse.parse_args()
         task = get_image.delay(arg)
-        return 202, {'Location': url_for('taskstatus', idv=task.id)}
+        return {'Location': url_for('taskstatus', idv=task.id)}, 202
     def get(self):
         return redirect(url_for('query'))
 api.add_resource(RGBMaker, '/api')
