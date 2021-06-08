@@ -68,11 +68,12 @@ def taskstatus(idv):
     task = get_image.AsyncResult(task_id=idv)
     if task.state == 'PENDING':
         info = {'info': 'processing'}
+        return info, 202
     elif task.state == 'SUCCESS':
         info = task.info
         try:
             print("success")
-            #deleteRecord(task.id)
+            deleteRecord(task.id)
         except:
             print("record not found for task")
     else:
