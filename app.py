@@ -14,11 +14,11 @@ from sqlalchemy import create_engine
 
 def make_celery(app):
     celery = Celery(
-        name='app',
+        name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
-        backend='db+sqlite:///db.sqlite3',
-        result_backend='rpc',
-        cache='db+sqlite:///db.sqlite3',
+        backend='redis://:p11c816e850c8bb35e8b4be68e3f558f7b2a38bbc16ffbe011e3edcd946a401f7@ec2-54-209-47-44.compute-1.amazonaws.com:25320',
+        result_backend='redis://:p11c816e850c8bb35e8b4be68e3f558f7b2a38bbc16ffbe011e3edcd946a401f7@ec2-54-209-47-44.compute-1.amazonaws.com:25320',
+        #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
         broker='amqps://nxkkxiyy:PhMB6k2UJ_jqKHrslJTZn44TbyEPY3YK@hornet.rmq.cloudamqp.com/nxkkxiyy',
     )
