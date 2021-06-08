@@ -1,5 +1,5 @@
 from astroquery.skyview import SkyView as skv
-import concurrent.futures
+#import concurrent.futures
 import numpy as np
 imglt = []
 
@@ -15,18 +15,18 @@ def get_imgl_pool(cals):
         pass
     return queue
   
-def run_imgl_pool(c,r,issvys,sam,cache):
-    
-    try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers = 2) as executor:
-            result =[0]*len(issvys)
-            try :
-                imglt = [executor.submit(get_imgl_pool, [c,issvys[ind],r,sam[ind],result,ind,cache]) for ind in range(len(issvys))]
-            except Exception as e:
-                raise  e
-        return result, None
-    except Exception as e:
-        raise  e 
+#def run_imgl_pool(c,r,issvys,sam,cache):
+#    
+#    try:
+#        with concurrent.futures.ThreadPoolExecutor(max_workers = 2) as executor:
+#            result =[0]*len(issvys)
+#            try :
+#                imglt = [executor.submit(get_imgl_pool, [c,issvys[ind],r,sam[ind],result,ind,cache]) for ind in range(len(issvys))]
+#            except Exception as e:
+#                raise  e
+#        return result, None
+#    except Exception as e:
+#        raise  e 
 
 # ----------- removing use of thread pool concurrency -----------------#
 def run_imgl(c,r,issvys,sam,cache):
