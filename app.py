@@ -10,14 +10,14 @@ import sqlite3
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
-#import psycopg2
+import psycopg2
 
 def make_celery(app):
     celery = Celery(
         name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
-        backend='db+sqlite:///db.sqlite3',
-        result_backend='db+sqlite:///db.sqlite3',
+        backend='db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
+        result_backend='db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
         #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
         broker='amqps://nxkkxiyy:PhMB6k2UJ_jqKHrslJTZn44TbyEPY3YK@hornet.rmq.cloudamqp.com/nxkkxiyy',
@@ -33,6 +33,7 @@ def make_celery(app):
     return celery
 
 app = Flask(__name__)
+#app.config['CELERY_RESULT_BACKEND']=""
 api = Api(app)
 app.secret_key = os.urandom(12)  # Generic key for dev purposes only
 CORS(app)
@@ -132,7 +133,7 @@ def deleteRecord(tid):
     """
     try:
         engine = create_engine(
-            'sqlite:///db.sqlite3')
+            'db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
         conn = engine.connect()
 
         meta = MetaData()
