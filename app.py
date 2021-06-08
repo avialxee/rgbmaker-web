@@ -17,8 +17,8 @@ def make_celery(app):
         name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
         backend='db+sqlite:///db.sqlite3',
-        #broker='amqp://guest:@localhost:5672//',
-        broker='amqps://nnapxrld:4rxNm7y38EW0DvIQAhyhs-3m29_jBbdb@hornet.rmq.cloudamqp.com/nnapxrld',
+        broker='amqp://guest:@localhost:5672//',
+        #broker='amqps://nnapxrld:4rxNm7y38EW0DvIQAhyhs-3m29_jBbdb@hornet.rmq.cloudamqp.com/nnapxrld',
     )
     celery.conf.update(app.config)
 
@@ -65,14 +65,15 @@ def taskstatus(idv):
     task = get_image.AsyncResult(task_id=idv)
     if task.state == 'PENDING':
         info = {'info': 'processing'}
+    elif task.state == 'SUCCESS':
+        info = task.info
+        try:
+            deleteRecord(task.id)
+        except:
+            print("record not found for task")
     else:
         info = task.info
-    try:
-        deleteRecord(task.id)
-    except:
-        print("record not found for task")
     return info
-
 
 # -------- Query ---------------------------------------------------------- #
 @app.route('/query', methods=['GET', 'POST'])
@@ -139,14 +140,38 @@ def deleteRecord(tid):
         )
         sql_exec = celery_taskmeta.delete().where(
             celery_taskmeta.c.task_id == tid, celery_taskmeta.c.status == 'SUCCESS')
-        sql = """DELETE from celery_taskmeta where task_id=?"""
-        conn.execute(sql, (tid,))
+        #sql = """DELETE from celery_taskmeta where task_id=?"""
+        conn.execute(sql_exec)
         conn.commit()
         conn.close()
         print("status : deleted")
     except sqlite3.Error as error:
         print("Failed to delete record from sqlite table", error)
 
+def checkRecord(tid):
+    """
+    checking record of each task created by celery.
+    """
+    try:
+        engine = create_engine('sqlite:///db.sqlite3')
+        conn = engine.connect()
+
+        meta = MetaData()
+
+        celery_taskmeta = Table(
+            'celery_taskmeta', meta,
+            Column('task_id', Integer, primary_key=True),
+            Column('status', String),
+        )
+        sql_exec = celery_taskmeta.select().where(
+            celery_taskmeta.c.task_id == tid, celery_taskmeta.c.status == 'SUCCESS')
+        #sql = """DELETE from celery_taskmeta where task_id=?"""
+        conn.execute(sql_exec)
+        conn.commit()
+        conn.close()
+    except sqlite3.Error as error:
+        print("Failed to delete record from sqlite table", error)
+        
 # ======== Main ============================================================== #
 if __name__ == "__main__":
     app.run(debug=False, use_reloader=True)
