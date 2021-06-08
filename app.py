@@ -133,7 +133,7 @@ def deleteRecord(tid):
     """
     try:
         engine = create_engine(
-            'db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
+            'psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
         conn = engine.connect()
 
         meta = MetaData()
