@@ -16,8 +16,8 @@ def make_celery(app):
     celery = Celery(
         name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
-        backend='redis://:p11c816e850c8bb35e8b4be68e3f558f7b2a38bbc16ffbe011e3edcd946a401f7@ec2-54-209-47-44.compute-1.amazonaws.com:25320',
-        result_backend='redis://:p11c816e850c8bb35e8b4be68e3f558f7b2a38bbc16ffbe011e3edcd946a401f7@ec2-54-209-47-44.compute-1.amazonaws.com:25320',
+        backend='db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
+        result_backend='db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
         #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
         broker='amqps://nxkkxiyy:PhMB6k2UJ_jqKHrslJTZn44TbyEPY3YK@hornet.rmq.cloudamqp.com/nxkkxiyy',
@@ -131,7 +131,8 @@ def deleteRecord(tid):
     deleting record of each task created by celery.
     """
     try:
-        engine = create_engine('sqlite:///db.sqlite3')
+        engine = create_engine(
+            'psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
         conn = engine.connect()
 
         meta = MetaData()
