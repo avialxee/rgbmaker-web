@@ -51,7 +51,6 @@ def getdd(c,r,insvys) :
     #if not error and len(imgls)==0:
     #    imgls, error = run_imgl_pool(c,r,pool_svys,sam,"False")
     # can also be included in run pool
-    print(imgls)
     for i in range(len(imgls)) :
         if imgls[i]==0:
             imglt.insert(i,[np.zeros((480,480)),None])
