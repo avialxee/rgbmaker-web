@@ -19,8 +19,8 @@ def make_celery(app):
         backend='db+sqlite:///db.sqlite3',
         result ='db+sqlite:///db.sqlite3',
         cache='db+sqlite:///db.sqlite3',
-        broker='amqp://guest:@localhost:5672//',
-        #broker='amqps://nnapxrld:4rxNm7y38EW0DvIQAhyhs-3m29_jBbdb@hornet.rmq.cloudamqp.com:5671/nnapxrld',
+        #broker='amqp://guest:@localhost:5672//',
+        broker='amqps://nnapxrld:4rxNm7y38EW0DvIQAhyhs-3m29_jBbdb@hornet.rmq.cloudamqp.com:5671/nnapxrld',
     )
     celery.conf.update(app.config)
 
