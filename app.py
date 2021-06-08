@@ -16,8 +16,8 @@ def make_celery(app):
     celery = Celery(
         name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
-        backend='db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
-        result_backend='db+psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
+        backend='db+postgresql://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
+        result_backend='db+postgresql://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
         #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
         broker='amqps://nxkkxiyy:PhMB6k2UJ_jqKHrslJTZn44TbyEPY3YK@hornet.rmq.cloudamqp.com/nxkkxiyy',
@@ -133,7 +133,7 @@ def deleteRecord(tid):
     """
     try:
         engine = create_engine(
-            'psycopg2://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
+            'postgresql://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
         conn = engine.connect()
 
         meta = MetaData()
