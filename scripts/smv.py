@@ -19,7 +19,7 @@ import matplotlib
 from scripts import multipool
 #from scripts import vocalls
 #import multipool
-matplotlib.rcParams['font.size']=15
+matplotlib.rcParams['font.size']=11
 #import cProfile, pstats
 #pr = cProfile.Profile()
 #pr.enable()
@@ -149,14 +149,18 @@ def pl_RGB(rows,columns,i,wcs,svy,lvlc,img,fig,name) :
 
     plt.contour(svy, lvlc, colors='white')
     if i==1 :
-        ax.set_title("ROR with NVSS contour ",y=1,pad=-16,color="white")
+        ax.set_title("ROR-RGB-C: TGSS(GMRT)-DSS2-NVSS(VLA)-NVSS",
+                     y=1, pad=-16, color="white")
         #ax.set_title("")
     if i==2 :
-        ax.set_title("ROR with TGSS contour ",y=1,pad=-16,color="white")
+        ax.set_title("ROR-RGB-C: TGSS(GMRT)-DSS2-NVSS(VLA)-TGSS",
+                     y=1, pad=-16, color="white")
     if i==3 :
-        ax.set_title("IOU with TGSS contour ",y=1,pad=-16,color="white")        
+        ax.set_title("IOU-RGB-C: WISE(22)-DSS2(red)-GALEX(NUV)-TGSS",
+                     y=1, pad=-16, color="white")
     if i==4 :
-        ax.set_title("Optical with TGSS contour ",y=1,pad=-16,color="white")
+        ax.set_title("Optical-RGB-C: DSS2(IR)-DSS2(Red)-DSS2(blue)-TGSS",
+                     y=1, pad=-16, color="white")
 
 
 
@@ -179,7 +183,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
   if len(name)<=2 :
     name = "Anonymous"
   if len(name)>15:
-    name = name[:15]
+    name = name[:28]
   # initializing values
   pixels=480
   levelc=4
@@ -295,9 +299,12 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       first=rftsget[2][0]
       dss2r=rftsget[3][0]
 
+      otext.append({'TGSSmin': '0.015'})
       otext.append({'TGSSmax': str(tgss.max())})
+      otext.append({'NVSSmin': '0.0015'})
       otext.append({'NVSSmax': str(nvss.max())})
-      otext.append({'FIRSTmax':str( first.max())})
+      otext.append({'FIRSTmin':'0.0005'})
+      otext.append({'FIRSTmax': str(first.max())})
             ######==== 2. Vizier access for TGSS catalog ====#####
       nra,ndec,tra,tdec=([],)*4
       
@@ -333,7 +340,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       ax1.annotate("By " + str(name),(400-5*len(name),10),color='white')
       ax1.set_autoscale_on(False)
       ax1.contour(tgss, lvlc1, colors='white')
-      ax1.set_title("ROR with TGSS contour ",y=1,pad=-16,color="white")
+      ax1.set_title("ROR-RGB-C: TGSS(GMRT)-DSS2-NVSS(VLA)-TGSS",
+                    y=1, pad=-16, color="white")
       try:
         try:
         
