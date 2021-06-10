@@ -234,8 +234,11 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       w22 = rftsget[5][0]
       gnuv = rftsget[6][0]
 
+      otext.append({'TGSSmin': '0.015'})
       otext.append({'TGSSmax': str(tgss.max())})
+      otext.append({'NVSSmin': '0.0015'})
       otext.append({'NVSSmax': str(nvss.max())})
+      
       ######==== 1. PLOTTING RGBC ====#####
 
       # plots initialization
