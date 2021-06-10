@@ -17,6 +17,7 @@ import io
 import urllib, base64
 import matplotlib
 from scripts import multipool
+#from scripts import vocalls
 #import multipool
 matplotlib.rcParams['font.size']=15
 #import cProfile, pstats
@@ -24,28 +25,29 @@ matplotlib.rcParams['font.size']=15
 #pr.enable()
 
 
-
 ## LIBRARY ==============================
 
 #nbi:hide_in
 def linear(inputArray, scale_min=None, scale_max=None):
-    imageData=np.array(inputArray, copy=True)
+    if not inputArray.max==0:
+      imageData=np.array(inputArray, copy=True)
 
-    if scale_min == None:
-        scale_min = imageData.min()
-    if scale_max == None:
-        scale_max = imageData.max()
+      if scale_min == None:
+          scale_min = imageData.min()
+      if scale_max == None:
+          scale_max = imageData.max()
 
-    imageData = imageData.clip(min=scale_min, max=scale_max)
-    imageData = (imageData -scale_min) / (scale_max - scale_min)
-    indices = np.where(imageData < 0)
-    imageData[indices] = 0.0
-    indices = np.where(imageData > 1)
-    imageData[indices] = 1.0
+      imageData = imageData.clip(min=scale_min, max=scale_max)
+      imageData = (imageData -scale_min) / (scale_max - scale_min)
+      indices = np.where(imageData < 0)
+      imageData[indices] = 0.0
+      indices = np.where(imageData > 1)
+      imageData[indices] = 1.0
 
     return imageData
 
 def sqrt(inputArray, scale_min=None, scale_max=None):
+  if not inputArray.max == 0:
     imageData=np.array(inputArray, copy=True)
 
     if scale_min == None:
@@ -60,8 +62,30 @@ def sqrt(inputArray, scale_min=None, scale_max=None):
     imageData = np.sqrt(imageData)
     imageData = imageData / math.sqrt(scale_max - scale_min)
 
-    return imageData
+  return imageData
 
+
+def log(inputArray, scale_min=None, scale_max=None,factor=2.0):
+  if not inputArray.max == 0:
+    imageData = np.array(inputArray, copy=True)
+
+
+    if scale_min == None:
+        scale_min = imageData.min()
+    if scale_max == None:
+      scale_max = imageData.max()
+    #factor =math.log10(scale_max - scale_min)
+    indices0 = np.where(imageData < 0)
+    indices1 = np.where((imageData >= scale_min) & (imageData <= scale_max))
+    indices2 = np.where(imageData > scale_max)
+    imageData[indices0] = 0.0
+    imageData[indices2] = 1.0
+    try:
+      imageData[indices1] = np.log10(imageData[indices1])/factor
+    except:
+      print ("Error on math.log10 ")
+   
+  return imageData
 
 def overlayc (r,g,b,c,lvl,cmin) :
   ri = normals(r)
@@ -70,7 +94,7 @@ def overlayc (r,g,b,c,lvl,cmin) :
   if ri.max() != 0 and ri.min()!=0 :
     ri = sqrt(ri,scale_min=0.1*np.std(ri),scale_max=np.max(ri))
   if gi.max() != 0 and gi.min()!=0 :
-    gi = sqrt(gi,scale_min=0.1*np.std(gi),scale_max=np.max(gi))
+    gi = sqrt(gi, scale_min=0.1*np.std(gi), scale_max=np.max(gi))
   if bi.max() != 0 and bi.min()!=0 :
     bi = sqrt(bi,scale_min=0.1*np.std(bi),scale_max=np.max(bi))
   replace = bi > 1
@@ -95,31 +119,30 @@ def normals(o) :
   else :
     return X_scaled
 
-def overlayo(r, g, b) :
-  ri = normals(r)
-  gi = normals(g)
-  bi = normals(b)
-  if ri.max() != 0 and ri.min()!=0 :
-    ri = linear(ri,scale_min=np.min(ri),scale_max=np.max(ri))
-  if gi.max() != 0 and gi.min()!=0 :
-    gi = linear(gi,scale_min=np.min(gi),scale_max=np.max(gi))
-  if bi.max() != 0 and bi.min()!=0 :
-    bi = linear(bi,scale_min=np.min(bi),scale_max=np.max(bi))  
-  #Replace any value higher than 1 with 1 
-  replace = bi > 1
-  bi[replace] = 1
-  replace = gi > 1
-  gi[replace] = 1
-  replace = ri > 1
-  ri[replace] = 1
-  #Stack the Images and set up as 8-bit integers (highest value 2^8 = 256)
-  img = (np.dstack((ri,gi,bi))*255.99).astype(np.uint8)
+
+def overlayo(ri, gi, bi, kind = 'IOU'):
+  if kind == 'IOU':
+    ri = sqrt(ri, scale_min=np.percentile(np.unique(ri),1.), scale_max=np.percentile(np.unique(ri),100.))
+    gi = sqrt(gi, scale_min=np.percentile(np.unique(gi),1.), scale_max=np.percentile(np.unique(gi),100.))
+    #gi = log(gi, scale_min=np.percentile(np.unique(gi),0.), scale_max=np.percentile(np.unique(gi),100.),factor=2.85)
+    bi = log(bi, scale_min=np.percentile(np.unique(bi),1.), scale_max=np.percentile(np.unique(bi),100.),factor=3.15)
+    img = (np.transpose([(ri*256).astype(np.uint8),(gi*256).astype(np.uint8),(bi*255).astype(np.uint8)], (1, 2, 0)))
+  if kind == 'Optical':
+    #ri = log(ri, scale_min=np.percentile(np.unique(ri),1.), scale_max=np.percentile(np.unique(ri),100.),factor=0.3)
+    ri = sqrt(ri, scale_min=np.min(ri), scale_max=np.percentile(np.unique(ri),100.))
+    gi = sqrt(gi, scale_min=1.15*np.min(gi), scale_max=np.percentile(np.unique(gi),100.))
+    #gi = log(gi, scale_min=np.percentile(np.unique(gi),0.), scale_max=np.percentile(np.unique(gi),100.),factor=7.85)
+    #bi = log(bi, scale_min=np.percentile(np.unique(bi),1.), scale_max=np.percentile(np.unique(bi),100.),factor=3.15)
+    bi = sqrt(bi, scale_min=np.min(bi), scale_max=np.percentile(np.unique(bi),100.))
+    img = (np.transpose([(ri*256).astype(np.uint8),(gi*255.99).astype(np.uint8),(bi*256).astype(np.uint8)], (1, 2, 0)))
+  #img = (np.dstack((ri,gi,bi))*255.99).astype(np.uint8)
+  #img = np.stack([ri,gi,bi], axis=2)
   return img
 
 def pl_RGB(rows,columns,i,wcs,svy,lvlc,img,fig,name) :
     ax = fig.add_subplot(rows, columns, i, projection=wcs)
     ax.axis( 'off')
-    ax.imshow(img)
+    ax.imshow(img, origin='lower', interpolation='nearest')
     ax.annotate("#RADatHomeIndia",(10,10),color='white')
     ax.annotate("By " + str(name),(400-5*len(name),10),color='white')
     ax.set_autoscale_on(False)
@@ -131,7 +154,7 @@ def pl_RGB(rows,columns,i,wcs,svy,lvlc,img,fig,name) :
     if i==2 :
         ax.set_title("ROR with TGSS contour ",y=1,pad=-16,color="white")
     if i==3 :
-        ax.set_title("IOU with TGSS contour ",y=1,pad=-16,color="white")
+        ax.set_title("IOU with TGSS contour ",y=1,pad=-16,color="white")        
     if i==4 :
         ax.set_title("Optical with TGSS contour ",y=1,pad=-16,color="white")
 
@@ -214,8 +237,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       # plots initialization
       img1, lvlc1 = overlayc(tgss,dss2r,nvss, nvss, levelc, 0.0015)
       img2, lvlc2 = overlayc(tgss,dss2r,nvss,tgss, levelc, 0.015)
-      img3 = overlayo(w22,dss2r,gnuv)
-      img4 = overlayo(dss2i,dss2r,dss2b)
+      img3 = overlayo(w22,dss2r,gnuv, kind='IOU')
+      img4 = overlayo(dss2i,dss2r,dss2b, kind='Optical')
 
       
       # plotting
@@ -255,7 +278,10 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
     try:  
       svys=[['TGSS ADR1'],['NVSS','VLA FIRST (1.4 GHz)'],['DSS2 Red']]
       rftsget, info = multipool.getdd(c,r,svys)
+      #svys = ['tgss', 'nvss', 'first', 'dss2']
+      #rftsget = vocalls.getdd(c, r, svys)
       
+
       for result in rftsget :
         if not wcs :
           wcs = WCS(result[1])
@@ -333,7 +359,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
         ax1.legend(framealpha=0.0,labelcolor='white')
         
         # Single Survey plot
-        dss2r = sqrt(dss2r,scale_min=0.5*np.std(dss2r),scale_max=np.max(dss2r))
+        dss2r = sqrt(dss2r, scale_min=np.percentile(
+            np.unique(dss2r), 1.), scale_max=np.percentile(np.unique(dss2r), 100.))
         ax2 = fig.add_subplot(1,2,2, projection=wcs)
         ax2.axis( 'off')    
         ax2.imshow(dss2r, origin='lower', cmap='gist_gray') 
