@@ -12,15 +12,16 @@ from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 import psycopg2
 
+db_url = os.environ['POSTGRES_URL']
 def make_celery(app):
     celery = Celery(
         name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
-        backend='db+postgresql://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
-        result_backend='db+postgresql://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda',
+        backend=os.environ['POSTGRES_BACKEND'],
+        result_backend=os.environ['POSTGRES_BACKEND'],
         #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
-        broker='amqps://nxkkxiyy:PhMB6k2UJ_jqKHrslJTZn44TbyEPY3YK@hornet.rmq.cloudamqp.com/nxkkxiyy',
+        broker=os.environ['BROKER_URL']
     )
     celery.conf.update(app.config)
 
@@ -134,7 +135,7 @@ def deleteRecord(tid):
     """
     try:
         engine = create_engine(
-            'postgresql://jjsalsnwqgzzrj:67f90487c651655f3bee4e9ea0f80e7362bf0d370274178b76e1e035cf3a297d@ec2-34-193-112-164.compute-1.amazonaws.com:5432/dge1pebnv4tda')
+            db_url)
         conn = engine.connect()
 
         meta = MetaData()
