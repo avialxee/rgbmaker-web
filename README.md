@@ -1,4 +1,4 @@
-# sky-rad
+# RGBMaker Tool
 sky-rad is a python-based flask app for #RADatHomeIndia with various aimed capabilities (in progress) which includes the astronomical archival data fetching service for different wavelengths (aka RGBMaker Tool).
 
 ## What are IOU ROR and RGB?
@@ -48,5 +48,26 @@ _Here is a brief description of each label provided in the form:_
 
 + #### Query 
   You are now finally ready to make your RAD-RGB image! Just press the button, give it a few seconds, and you will have taken your first step in the RGB image analysis. The next and most important step in the analysis. All the best for that! 
+
+## Contour Map
+_contour maps are lines which share the same values for the represented plane_
+
+Radio survey data contains a range of values as spectral flux density (Jy). These values may contain background noise data,  values below these have little to no significance in astronomical study of the object. Each sky survey provides a RMS (Root Mean Squared or 1-sigma) value or an accepted signal(3-5 sigma) value for the sky region. The RMS value above 3-sigma is taken as detection of the radio source being studied. The contour map helps us visualize the values of spectral flux density at each level of contour lines. 
+
+Example: 
+
+
+Table with details of few radio surveys :
+
+| Frequency | Survey | Detection | Resolution |
+|:------:|:-----:|:------:|:------:|
+|-|-|**Jy/beam**|**(arcsec)**|
+| 1.4 GHz | VLA  FIRST | 0.0005 Jy | 5 x 5  |
+| 1.4 GHz | VLA  NVSS | 0.0015 Jy | 45 x 45 |
+| 150 MHz | TGSS ADR1 | 0.015 Jy | 25 x 25  |
+| 74 MHz | VLSSr | 0.3 Jy | 75 x 75  |
+| 325 MHz | WENSS | 0.018 Jy | 54 x 54 |
+| 843 MHz | SUMSS | 0.010 Jy | 45 x 45 |
+
 
 > _Please check the RAD-RGB acknowledgment at the bottom of the page for further details_ : [RAD-RGB Maker Tool Acknowledgement](https://docs.google.com/document/d/1U5nkmCKOlgnDk4pO7d7HKj_OidH9IvXNfW9AojBc-s0/edit)
