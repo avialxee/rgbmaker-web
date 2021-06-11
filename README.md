@@ -40,7 +40,7 @@ _Here is a brief description of each label provided in the form:_
   #### Composite Contours on DSS2R
   
     _This option returns two images._
-    
+
     + The first is a [ROR](#what-is-iou-ror-and-rgb) Image with TGSS contours. The various symbol seen on the image is the [catalog](https://en.wikipedia.org/wiki/Astronomical_catalog) data of the respective survey.
     + The second image is a composite image with DSS2Red background and contours of various radio surveys like TGSS, NVSS, and VLA First (if available).
 
@@ -55,8 +55,6 @@ _Here is a brief description of each label provided in the form:_
 _contour maps are lines which share the same values for the represented plane_
 
 Radio survey data contains a range of values as spectral flux density (Jy). These values may contain background noise data,  values below these have little to no significance in astronomical study of the object. Each sky survey provides a RMS (Root Mean Squared or 1-sigma) value or an accepted signal(3-5 sigma) value for the sky region. The RMS value above 3-sigma is taken as detection of the radio source being studied. The contour map helps us visualize the values of spectral flux density at each level of contour lines. 
-
-Example: 
 
 
 Table with details of few radio surveys :
