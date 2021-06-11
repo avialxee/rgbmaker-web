@@ -12,16 +12,16 @@ from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 import psycopg2
 
-db_url = os.environ['POSTGRES_URL']
+db_url = os.environ['DATABASE_URL']
 def make_celery(app):
     celery = Celery(
         name='tasks',
         #backend=app.config["CELERY_BACKEND_URL"],
-        backend=os.environ['POSTGRES_BACKEND'],
-        result_backend=os.environ['POSTGRES_BACKEND'],
+        backend='db+'+db_url,
+        result_backend='db+'+db_url,
         #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
-        broker=os.environ['BROKER_URL']
+        broker=os.environ['CLOUDAMQP_URL']
     )
     celery.conf.update(app.config)
 
