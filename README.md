@@ -32,6 +32,7 @@ _Here is a brief description of each label provided in the form:_
   #### IOU ROR Optical
   
     _This option returns four images._
+
     + There are two [ROR](#what-is-iou-ror-and-rgb) _(Radio (TGSS ADR1) - Optical (DSS2Red) - Radio (NVSS))_ images. One with TGSS Contours and another with NVSS Contours. 
     + The third image is an [IOU](#what-is-iou-ror-and-rgb) _(Infrared (WISE 22) - Optical (DSS2 Red) - Ultraviolet (Galex Near UV))_ with TGSS Contours. 
     + The final RGB image is an optical image with _(DSS2IR - DSS2Red - DSS2Blue)_ with TGGSS Contours. 
@@ -39,6 +40,7 @@ _Here is a brief description of each label provided in the form:_
   #### Composite Contours on DSS2R
   
     _This option returns two images._
+    
     + The first is a [ROR](#what-is-iou-ror-and-rgb) Image with TGSS contours. The various symbol seen on the image is the [catalog](https://en.wikipedia.org/wiki/Astronomical_catalog) data of the respective survey.
     + The second image is a composite image with DSS2Red background and contours of various radio surveys like TGSS, NVSS, and VLA First (if available).
 
