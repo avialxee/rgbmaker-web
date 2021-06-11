@@ -306,7 +306,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       otext.append({'TGSSmax': str(tgss.max())})
       otext.append({'NVSSmin': str(nvss.min())})
       otext.append({'NVSSmax': str(nvss.max())})
-      otext.append({'FIRSTmin': str(first.mnin())})
+      otext.append({'FIRSTmin': str(first.min())})
       otext.append({'FIRSTmax': str(first.max())})
             ######==== 2. Vizier access for TGSS catalog ====#####
       nra,ndec,tra,tdec=([],)*4
@@ -329,6 +329,10 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       else :
           lvlcn=None
           
+      #otext.append({'Contour levels for TGSS': lvlct})
+      #otext.append({'Contour levels for NVSS': lvlcn})
+      #otext.append({'Contour levels for FIRST': lvlcf})
+
 
       # plotting
 
