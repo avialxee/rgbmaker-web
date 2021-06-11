@@ -247,6 +247,8 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       img3 = overlayo(w22,dss2r,gnuv, kind='IOU')
       img4 = overlayo(dss2i,dss2r,dss2b, kind='Optical')
 
+      otext.append({'TGSS_': (str(np.round(lvlc1, 3)))})
+      otext.append({'NVSS_': (str(np.round(lvlc2, 4)))})
       
       # plotting
       plt.ioff()
@@ -328,10 +330,10 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
           lvlcn = np.arange(0.0015, nvss.max(),((nvss.max() - 0.0015)/levelc))
       else :
           lvlcn=None
-          
-      #otext.append({'Contour levels for TGSS': lvlct})
-      #otext.append({'Contour levels for NVSS': lvlcn})
-      #otext.append({'Contour levels for FIRST': lvlcf})
+       
+      otext.append({'TGSS_': (str(np.round(lvlct,3)))})
+      otext.append({'NVSS_': (str(np.round(lvlcn, 4)))})
+      otext.append({'FIRST_': (str(np.round(lvlcf,4)))})
 
 
       # plotting
