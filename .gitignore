@@ -135,3 +135,4 @@ scripts/img_scale.py
 template/settings.html
 template/navbar.html
 template/home.html
+template/login.html
