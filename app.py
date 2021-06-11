@@ -12,7 +12,7 @@ from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 import psycopg2
 
-db_url = os.environ['DATABASE_URL']
+db_url = os.environ['DATABASE_URL'].replace("postgres", "postgresql")
 def make_celery(app):
     celery = Celery(
         name='tasks',
