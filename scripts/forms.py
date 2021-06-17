@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from traitlets.traitlets import default
 from wtforms import Form, StringField, validators, DecimalField, SelectField, BooleanField
 
 

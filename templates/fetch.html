@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block body %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<title>RGB Maker</title>
+
+<div class="jumbotron">
+    <h3>#RADatHomeIndia RGB Maker</h3>
+    <div class="col-md-3">
+        <form>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input name="name" type="text" class="form-control" id="name" placeholder="Your Name" maxlength="28">
+            </div>
+            <div class="form-group">
+                <label for="position">Position </label>
+                <input name="position" type="text" class="form-control" id="position" required
+                    placeholder="Object Name or Coordinate" data-toggle="popover" data-trigger="focus"
+                    title="Enter target's position" data-placement="top"
+                    data-content="Enter Astronomical Object's name or coordinate. ex: Pleiades, 3C 33.1, 14 09 48.86 -03 02 32.6">
+            </div>
+
+            <div class="form-group">
+
+                <label for="radius">Size (in degrees)</label>
+                <input id="radius" name="radius" class="form-control" placeholder="Radius" required type="number"
+                    step="0.01" value="0.12" max="2.0" data-toggle="popover" data-trigger="focus" data-placement="top"
+                    data-content="Enter angular size in degrees">
+
+            </div>
+            <div class="form-group">
+
+
+                <span class="icon is-small is-left">
+
+                </span>
+                </p>
+
+                <p class=" has-icons-left">
+                    <label for="imagesopt">Images </label> <a target="_blank" class="help-popover" data-toggle="popover"
+                        data-trigger="focus" title="Select Image Output" data-placement="top"
+                        data-content="ROR : Radio Optical Radio, IOU: Infra-red Optical UV. See How to use." href="#"
+                        onclick="event.preventDefault()">(?)</a>
+                    <select id="imagesopt" name="imagesopt" class="form-control">
+                        <option value="1">IOU ROR Optical</option>
+                        <option value="2">Composite contours on DSS2R</option>
+                        <option value="3">None</option>
+                    </select>
+                    <span class="icon is-small is-left">
+
+                    </span>
+                </p>
+                <label for="archives">Archives <a target="_blank" class="help-popover" data-toggle="popover"
+                        data-placement="top" data-trigger="focus" data-content="Advance archival tools." href="#"
+                        onclick="event.preventDefault()">(?)</a></label>
+                <div class="">
+                    <div class="select">
+                        <select id="archives" class="form-control" name="archives">
+                            <option value="1">None</option>
+                            <option value="2">NVAS</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <p id="query-btn" class=" ">
+                <input id="submit" class="btn btn-outline-info" name="submit" type="submit" value="query">
+            </p>
+            <div id="loading" class="spinner-border text-info" role="status" style="display: none;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </form>
+    </div>
+    <div id="skv-output " class=" col-md-12">
+        <div id="skv-output-img" class="">
+        </div>
+    </div>
+
+    <div class="col-md-6 p-3 ">
+        <div id="skv-output-status" style="display: None;" role="alert">
+        </div>
+        <div id="skv-output-otext" style="display: None;" role="alert" class="alert alert-info">
+        </div>
+    </div>
+    <div class="col-md-6 p-3 ">
+    </div>
+    <span id="connection-status" class="badge badge-success"></span>
+</div>
+
+<span class="text-center">
+    <p class="text-center">
+        <a target="_blank"
+            href=https://docs.google.com/document/d/1U5nkmCKOlgnDk4pO7d7HKj_OidH9IvXNfW9AojBc-s0/edit?usp=sharing>RAD-RGB
+            image Acknowledgement </a> </p> </span> <div class="text-center">
+            <!-- Button trigger modal -->
+            <a target="_blank" href=# onclick="event.preventDefault()"><span class="" data-toggle="modal"
+                    data-target="#howotusergbmaker">
+                    How to use
+                </span></a>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="howotusergbmaker" tabindex="-1" role="dialog" aria-labelledby="howotusergbmaker"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="howotusergbmakerTitle">RGB Maker guide <a target="_blank"
+                                    href="https://radathomeindia.org/rgbmaker-info"><i class="fa fa-external-link"
+                                        aria-hidden="true"></i></a></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!--button type="button" class="btn btn-primary">Save changes</button-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+<script type=text/javascript> $LOGIN="{{url_for('login')}}" //$URL='https://sky.radathomeindia.org'
+    $URL="http://localhost:5000" </script> <script src="{{url_for('static', filename='js/scripts.js')}}"></script>
+{% endblock %}

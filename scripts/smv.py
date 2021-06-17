@@ -1,4 +1,7 @@
 
+from astropy.coordinates import Angle
+from regions import PixCoord, EllipsePixelRegion
+from matplotlib.collections import PatchCollection
 from astroquery.nvas import Nvas
 from astroquery.vizier import Vizier
 
@@ -125,8 +128,10 @@ def overlayo(ri, gi, bi, kind = 'IOU'):
     ri = sqrt(ri, scale_min=np.percentile(np.unique(ri),1.), scale_max=np.percentile(np.unique(ri),100.))
     gi = sqrt(gi, scale_min=np.percentile(np.unique(gi),1.), scale_max=np.percentile(np.unique(gi),100.))
     #gi = log(gi, scale_min=np.percentile(np.unique(gi),0.), scale_max=np.percentile(np.unique(gi),100.),factor=2.85)
-    bi = log(bi, scale_min=np.percentile(np.unique(bi),1.), scale_max=np.percentile(np.unique(bi),100.),factor=3.15)
-    img = (np.transpose([(ri*256).astype(np.uint8),(gi*256).astype(np.uint8),(bi*255).astype(np.uint8)], (1, 2, 0)))
+    bi = log(bi, scale_min=np.percentile(np.unique(bi),1.), scale_max=np.percentile(np.unique(bi),100.),factor=3.14)
+    mul_factor = 255/ri.max()
+    img = (np.transpose([(ri*mul_factor).astype(np.uint8),(gi*255/gi.max()).astype(np.uint8),(bi*255).astype(np.uint8)], (1, 2, 0)))
+
   if kind == 'Optical':
     #ri = log(ri, scale_min=np.percentile(np.unique(ri),1.), scale_max=np.percentile(np.unique(ri),100.),factor=0.3)
     ri = sqrt(ri, scale_min=np.min(ri), scale_max=np.percentile(np.unique(ri),100.))
@@ -134,7 +139,8 @@ def overlayo(ri, gi, bi, kind = 'IOU'):
     #gi = log(gi, scale_min=np.percentile(np.unique(gi),0.), scale_max=np.percentile(np.unique(gi),100.),factor=7.85)
     #bi = log(bi, scale_min=np.percentile(np.unique(bi),1.), scale_max=np.percentile(np.unique(bi),100.),factor=3.15)
     bi = sqrt(bi, scale_min=np.min(bi), scale_max=np.percentile(np.unique(bi),100.))
-    img = (np.transpose([(ri*256).astype(np.uint8),(gi*255.99).astype(np.uint8),(bi*256).astype(np.uint8)], (1, 2, 0)))
+    mul_factor = 255/ri.max()
+    img = (np.transpose([(ri*mul_factor).astype(np.uint8),(gi*255.99).astype(np.uint8),(bi*256).astype(np.uint8)], (1, 2, 0)))
   #img = (np.dstack((ri,gi,bi))*255.99).astype(np.uint8)
   #img = np.stack([ri,gi,bi], axis=2)
   return img
@@ -162,6 +168,12 @@ def pl_RGB(rows,columns,i,wcs,svy,lvlc,img,fig,name) :
         ax.set_title("Optical-RGB-C: DSS2(IR)-DSS2(Red)-DSS2(blue)-TGSS",
                      y=1, pad=-16, color="white")
 
+
+# ------------ arcsec to pixel conversion ----------------------------#-#
+
+def to_pixel(unit_inarcsec, r, px = 480):
+    nvss_px_scale = px/(r)
+    return np.round(((unit_inarcsec/3600) * ut.deg * nvss_px_scale), 2).value
 
 
 ## ====== Settings ========================
@@ -246,9 +258,10 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       img2, lvlc2 = overlayc(tgss,dss2r,nvss,tgss, levelc, 0.015)
       img3 = overlayo(w22,dss2r,gnuv, kind='IOU')
       img4 = overlayo(dss2i,dss2r,dss2b, kind='Optical')
-
-      otext.append({'TGSS_': (str(np.round(lvlc1, 3)))})
-      otext.append({'NVSS_': (str(np.round(lvlc2, 4)))})
+      if lvlc1:
+        otext.append({'TGSS_': (str(np.round(lvlc1, 3)))})
+      if lvlc2:
+        otext.append({'NVSS_': (str(np.round(lvlc2, 4)))})
       
       # plotting
       plt.ioff()
@@ -320,24 +333,22 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       img1, lvlc1 = overlayc(tgss,dss2r,nvss, tgss, levelc, 0.015)
       if tgss.max() > 0.015 :
           lvlct = np.arange(0.015, tgss.max(),((tgss.max() - 0.015)/levelc))
+          otext.append({'TGSS_': (str(np.round(lvlct, 3)))})
       else :
           lvlct=None
       if first.max() > 0.0005 :
           lvlcf = np.arange(0.0005, first.max(),((first.max() - 0.0005)/levelc))
+          otext.append({'FIRST_': (str(np.round(lvlcf,4)))})    
       else :
           lvlcf=None
       if nvss.max() > 0.0015 :
           lvlcn = np.arange(0.0015, nvss.max(),((nvss.max() - 0.0015)/levelc))
+          otext.append({'NVSS_': (str(np.round(lvlcn, 4)))})
       else :
           lvlcn=None
        
-      otext.append({'TGSS_': (str(np.round(lvlct,3)))})
-      otext.append({'NVSS_': (str(np.round(lvlcn, 4)))})
-      otext.append({'FIRST_': (str(np.round(lvlcf,4)))})
-
 
       # plotting
-
       plt.ioff()
       fig = plt.figure(figsize=(20, 20))
       
@@ -349,27 +360,80 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       ax1.annotate("By " + str(name),(400-5*len(name),10),color='white')
       ax1.set_autoscale_on(False)
       ax1.contour(tgss, lvlc1, colors='white')
-      ax1.set_title("ROR-RGB-C: TGSS(GMRT)-DSS2-NVSS(VLA)-TGSS",
+      ax1.set_title('ROR-RGB-C: TGSS(GMRT)-DSS2-NVSS(VLA)-TGSS',
                     y=1, pad=-16, color="white")
       try:
         try:
         
 
-          tviz = Vizier.query_region(c,r, catalog='J/A+A/598/A78/table3')
+          tviz = Vizier(columns=['RAJ2000','DEJ2000','Maj','Min','PA' ]).query_region(c,r, catalog='J/A+A/598/A78/table3')
           tra=tviz[0]['RAJ2000']*ut.deg
           tdec=tviz[0]['DEJ2000']*ut.deg
           ax1.scatter(tra, tdec, transform=ax1.get_transform('fk5'), s=300,
             edgecolor='yellow', color='gold', zorder=4, marker='1', alpha=1, label='TGSS Catalog')
-        
+          tra = tviz[0]['RAJ2000']  # *ut.deg
+          tdec = tviz[0]['DEJ2000']  # *ut.deg
+          tMaj = tviz[0]['Maj']
+          tMin = tviz[0]['Min']
+          tPA = tviz[0]['PA']
+
+          center_tgss = coordinates.SkyCoord(ra=tra, dec=tdec)
+          center_tgss_px = wcs.world_to_pixel(center_tgss)
+          patch1 = []
+          for i in range(len(center_tgss_px[0])):
+              x, y = center_tgss_px[0][i], center_tgss_px[1][i]
+              ce = PixCoord(x, y)
+              a = to_pixel(tMaj[i],r)
+              b = to_pixel(tMin[i], r)
+              theta =Angle(tPA[i], 'deg') + 90*ut.deg
+
+              reg = EllipsePixelRegion(center=ce, width=a, height=b, angle=theta)
+              ellipse = reg.as_artist(facecolor='none', edgecolor='yellow', lw=2)
+              patch1.append(ellipse)
+
+          
+          tgss_catalog = PatchCollection(
+              patch1, edgecolor='yellow', facecolor='None')
+          
+          ax1.add_collection(tgss_catalog)
         finally:
-          nviz = Vizier.query_region(c,r, catalog='VIII/65/nvss')
-          nra=coordinates.Angle(nviz[0]['RAJ2000'], unit=ut.hour).deg
-          ndec=coordinates.Angle(nviz[0]['DEJ2000'], unit=ut.deg).deg
-          ax1.scatter(nra, ndec, transform=ax1.get_transform('fk5'), s=300,
-            edgecolor='cyan', color='none', zorder=3, marker='.', label='NVSS Catalog')
-        
+
+          nviz = Vizier(columns=['RAJ2000','DEJ2000','MajAxis','MinAxis','PA' ]).query_region(c,
+                                                     r, catalog='VIII/65/nvss')
+          nra = coordinates.Angle(nviz[0]['RAJ2000'], unit=ut.hour)  # .deg
+          ndec = coordinates.Angle(nviz[0]['DEJ2000'], unit=ut.deg)  # .deg
+          nrad = coordinates.Angle(nviz[0]['RAJ2000'], unit=ut.hour).deg
+          ndecd = coordinates.Angle(nviz[0]['DEJ2000'], unit=ut.deg).deg
+          nMaj = nviz[0]["MajAxis"]
+          nMin = nviz[0]["MinAxis"]
+          if "PA" in nviz[0].columns:
+              nPA = nviz[0]["PA"]
+          else:
+              nPA = 0
+
+          cee2 = coordinates.SkyCoord(ra=nra, dec=ndec)
+          center2 = wcs.world_to_pixel(cee2)
+          patch2 = []
+          for i in range(len(center2[0])):
+            x, y = center2[0][i], center2[1][i]
+            ce = PixCoord(x, y)
+            a = to_pixel(nMaj[i],r)
+            b = to_pixel(nMin[i],r)
+            if nPA[i]!=0 and nPA[i]!= '--':
+              theta = Angle(nPA[i], 'deg') + 90*ut.deg
+            else:
+              theta = 0*ut.deg + 90*ut.deg
+
+            reg = EllipsePixelRegion(
+                center=ce, width=a, height=b, angle=theta)
+            ellipse = reg.as_artist(facecolor='none', edgecolor='cyan', lw=2)
+            patch2.append(ellipse)
+          nvss_catalog = PatchCollection(
+              patch2, edgecolor='cyan', facecolor='None')
+          ax1.add_collection(nvss_catalog)
         #cs=coordinates.SkyCoord(ra,dec,frame='fk5')
-        
+          ax1.scatter(nrad, ndecd, transform=ax1.get_transform('fk5'), s=300,
+                      edgecolor='cyan', color='none', zorder=4, marker='.', label='NVSS Catalog')
       except:
         info=" Catalog data missing!"
       finally:
@@ -395,12 +459,10 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
         leg4 = mpatches.Patch(color='white', label='DSS2R')
         
         ax2.legend(handles=[leg1,leg2,leg3,leg4], labelcolor='linecolor', framealpha=0.0,)
-        ax2.autoscale(False)
-        
+        ax2.autoscale(False)        
         plt.subplots_adjust(wspace=0.01,hspace=0.01)
         #esky = esr(cs, height=blobM[0]*ut.arcsec, width=blobm[0]*ut.arcsec, angle=pa[0]*ut.arcsec)
         #sky_pix.plot()
-
 
         ############ Saving final plot #####################
         buf = io.BytesIO()
@@ -416,7 +478,7 @@ def query (name="",position="",radius=float(0.12),archives=1,imagesopt=2) :
       info = info or " No images found."
       uri = ""
       status = "warning"
-  
+
 
   if archives and int(archives) == 2 and c:
       text=""

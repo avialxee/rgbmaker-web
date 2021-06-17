@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from scripts import forms,smv
+from radathome.fetch import query as qu
+from scripts import forms #,smv
+
 from flask import Flask, redirect, url_for, render_template, request, jsonify
 import os
 from flask_cors import CORS
@@ -13,6 +15,7 @@ from sqlalchemy import create_engine
 import psycopg2
 
 db_url = os.environ['DATABASE_URL'].replace("postgres", "postgresql")
+#db_url='sqlite:///db.sqlite3'
 def make_celery(app):
     celery = Celery(
         name='tasks',
@@ -50,7 +53,7 @@ celery = make_celery(app)
 
 @celery.task(bind=True)
 def get_image(self, arg):
-    info, uri, txt, otext = smv.query(name=arg['name'], position=arg['position'],
+    info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
                                       radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
     self.update_state(state='PROGRESS' or info,
                       meta={'txt': txt, 'otext': otext,
@@ -63,7 +66,7 @@ def get_image(self, arg):
 def login():
     return redirect(url_for('query'))
 
-# -------- Task Status output ------------------------------------------------------------- #
+# -------- Task Status output --------------------------------------------- #
 @app.route('/status/<idv>')
 def taskstatus(idv):
     task = get_image.AsyncResult(task_id=idv)
@@ -93,7 +96,7 @@ def query():
         images=request.form['images']
         
         if qform.validate():
-            info, uri, txt, otext = smv.query(name,position,radius,archives,images)
+            info, uri, txt, otext = qu(name,position,radius,archives,images)
             try :
                 return jsonify([info,txt,uri,otext]) 
             except Exception as e :
@@ -104,13 +107,10 @@ def query():
     else:
         info = jsonify(['info','Please enter coordinates','#'])
 
-    return render_template('query.html', form=qform)
+    return render_template('fetch.html', form=qform)
 
 ##-----------==============         API for accessing RGBMaker       ========-----------##
-@app.route('/home/<string:num>', methods = ['GET'])
-def disp(num):
-    info, uri, txt = smv.query(position=num)
-    return jsonify({'info': info, 'message': txt, 'url':uri})
+
 parse = reqparse.RequestParser()
 parse.add_argument('position')
 parse.add_argument('radius')
