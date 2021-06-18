@@ -64,16 +64,16 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
             return the top 5 results from NVAS (if exists). These can be downloaded as .imfits files (open with DS9) 
             by using save as an option when right-clicked.
     """
-    session = rgbmaker(name=name, position=position,
+    fetch_q = rgbmaker(name=name, position=position,
                   radius=radius, archives=archives, imagesopt=imagesopt)
-    name = session.name
+    name = fetch_q.name
     start = perf_counter()
-    val = session.return_values()
+    val = fetch_q.return_values()
     
     level_contour=4
 
 
-    if session.imagesopt == 1 and session.c:
+    if fetch_q.imagesopt == 1 and fetch_q.c:
         # --- using variables for readability -#--#
         tgss, dss2r, nvss, w22, gnuv, dss2i, dss2b = val['tgss']['data'], val[
             'dss2r']['data'], val['nvss']['data'], val['w22']['data'], val[
@@ -85,16 +85,16 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         img3 = overlayo(w22,dss2r,gnuv, kind='IOU')
         img4 = overlayo(dss2i,dss2r,dss2b, kind='Optical')
         if lvlc1 is not None:
-            session.otext.append({'NVSS contours': (str(np.round(lvlc1, 3)))})
+            fetch_q.otext.append({'TGSS contour ': (str(np.round(lvlc1, 3)))})
         if lvlc2 is not None:
-            session.otext.append({'TGSS contours': (str(np.round(lvlc2, 4)))})
+            fetch_q.otext.append({'NVSS contour ': (str(np.round(lvlc2, 4)))})
 
         # -------- plotting first plot -------------#--#
         plt.ioff()
         fig = plt.figure(figsize=(20, 20))
 
-        pl_RGB(1, 2, 1, session.wcs, val['nvss']['data'], lvlc1, img1, fig, name)
-        pl_RGB(1, 2, 2, session.wcs, val['tgss']['data'], lvlc2, img2, fig, name)
+        pl_RGB(1, 2, 1, fetch_q.wcs, val['nvss']['data'], lvlc1, img1, fig, name)
+        pl_RGB(1, 2, 2, fetch_q.wcs, val['tgss']['data'], lvlc2, img2, fig, name)
         plt.subplots_adjust(wspace=0.01, hspace=0.01)
 
         #-------- Saving first plot ------#--#
@@ -104,15 +104,15 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         buf.seek(0)
         string = base64.b64encode(buf.read())
         plt.close()        
-        session.uri.append(
+        fetch_q.uri.append(
             {'img1': 'data:image/png;base64,' + urllib.parse.quote(string)})
 
 
         #-------- plotting second plot -----#--#
         plt.ioff()
         fig1 = plt.figure(figsize=(20, 20))
-        pl_RGB(1, 2, 1, session.wcs, val['tgss']['data'], lvlc2, img3, fig1, name)
-        pl_RGB(1, 2, 2, session.wcs, val['tgss']['data'], lvlc2, img4, fig1, name)
+        pl_RGB(1, 2, 1, fetch_q.wcs, val['tgss']['data'], lvlc2, img3, fig1, name)
+        pl_RGB(1, 2, 2, fetch_q.wcs, val['tgss']['data'], lvlc2, img4, fig1, name)
         plt.subplots_adjust(wspace=0.01, hspace=0.01)
 
         #-------- Saving second plot ------#--#
@@ -122,15 +122,15 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         buf1.seek(0)
         string1 = base64.b64encode(buf1.read())
         plt.close()
-        session.uri.append(
+        fetch_q.uri.append(
             {'img2': 'data:image/png;base64,' + urllib.parse.quote(string1)})
 
         #-------- Output for success -----#--#
         time_taken = perf_counter()-start
-        session.info = 'completed in ' + str(np.round(time_taken, 3))+". "
-        session.status = "success"
+        fetch_q.info = 'completed in ' + str(np.round(time_taken, 3))+". "
+        fetch_q.status = "success"
         
-    elif session.imagesopt == 2 and session.c:
+    elif fetch_q.imagesopt == 2 and fetch_q.c:
         
         tgss, dss2r, nvss, first = val['tgss']['data'], val[
             'dss2r']['data'], val['nvss']['data'], val['first']['data']
@@ -139,18 +139,18 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         #img1, lvlc1 = overlayc(tgss, dss2r, nvss, tgss, level_contour, 0.015)
         if tgss.max() > 0.015:
             lvlct = np.arange(0.015, tgss.max(), ((tgss.max() - 0.015)/level_contour))
-            session.otext.append({'TGSS contour ': (str(np.round(lvlct, 3)))})
+            fetch_q.otext.append({'TGSS contour ': (str(np.round(lvlct.tolist(), 3)))})
         else:
             lvlct = None
         if first.max() > 0.0005:
             lvlcf = np.arange(0.0005, first.max(),
                                 ((first.max() - 0.0005)/level_contour))
-            session.otext.append({'FIRST contour ': (str(np.round(lvlcf, 4)))})
+            fetch_q.otext.append({'FIRST contour ': (str(np.round(lvlcf, 4)))})
         else:
             lvlcf = None
         if nvss.max() > 0.0015:
             lvlcn = np.arange(0.0015, nvss.max(), ((nvss.max() - 0.0015)/level_contour))
-            session.otext.append({'NVSS contour ': (str(np.round(lvlcn, 4)))})
+            fetch_q.otext.append({'NVSS contour ': (str(np.round(lvlcn.tolist(), 4)))})
         else:
             lvlcn = None
 
@@ -159,7 +159,7 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         fig = plt.figure(figsize=(20, 20))
         
         #--- RGBC plot -------------------#--#
-        ax1 = fig.add_subplot(1,2,1, projection=session.wcs) 
+        ax1 = fig.add_subplot(1,2,1, projection=fetch_q.wcs) 
         ax1.axis('off')
         dss2r = sqrt(dss2r, scale_min=np.percentile(
             np.unique(dss2r), 1.), scale_max=np.percentile(np.unique(dss2r), 100.))
@@ -173,7 +173,7 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         
             #--- vizier access ---------------#--
             # TODO: use labels for each patch as 1,2,3 and show table corresponding to that.#
-        tgss_viz, nvss_viz = session.vz_query()
+        tgss_viz, nvss_viz = fetch_q.vz_query()
         if tgss_viz is not None:
             tmaj, tmin, tPA, tcen = tgss_viz
         if nvss_viz is not None:
@@ -184,8 +184,8 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                 for i in range(len(tcen[0])):
                     x, y = tcen[0][i], tcen[1][i]
                     ce = PixCoord(x, y)
-                    a = to_pixel(tmaj[i], session.r)
-                    b = to_pixel(tmin[i], session.r)
+                    a = to_pixel(tmaj[i], fetch_q.r)
+                    b = to_pixel(tmin[i], fetch_q.r)
                     theta =Angle(tPA[i], 'deg') + 90*ut.deg
 
                     reg = EllipsePixelRegion(center=ce, width=a, height=b, angle=theta)
@@ -208,8 +208,8 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                 for i in range(len(ncen[0])):
                     x, y = ncen[0][i], ncen[1][i]
                     ce = PixCoord(x, y)
-                    a = to_pixel(nmaj[i], session.r)
-                    b = to_pixel(nmin[i], session.r)
+                    a = to_pixel(nmaj[i], fetch_q.r)
+                    b = to_pixel(nmin[i], fetch_q.r)
                     if nPA[i] != 0 and nPA[i] != '--':
                         theta = Angle(nPA[i], 'deg') + 90*ut.deg
                     else:
@@ -228,14 +228,14 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                 ax1.add_collection(nvss_catalog)
 
         except:
-            session.info = "catalog data missing"
+            fetch_q.info = "catalog data missing"
         finally:
             #ax1.legend(framealpha=0.0, labelcolor='white')
 
             #-------- single survey plot ---------#--#
             dss2r = sqrt(dss2r, scale_min=np.percentile(
                 np.unique(dss2r), 1.), scale_max=np.percentile(np.unique(dss2r), 100.))
-            ax2 = fig.add_subplot(1, 2, 2, projection=session.wcs)
+            ax2 = fig.add_subplot(1, 2, 2, projection=fetch_q.wcs)
             ax2.axis('off')
             ax2.imshow(dss2r, origin='lower', cmap='gist_gray')
             ax2.annotate("#RADatHomeIndia", (10, 10), color='white')
@@ -267,10 +267,10 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
             plt.close()
 
             #-------- Output for success -----#--#
-            session.uri.append(
+            fetch_q.uri.append(
                 {'img1': 'data:image/png;base64,' + urllib.parse.quote(string1)})
             time_taken = perf_counter()-start
-            session.info = 'completed in ' + str(np.round(time_taken, 3))+". "
-            session.status = "success"
+            fetch_q.info = 'completed in ' + str(np.round(time_taken, 3))+". "
+            fetch_q.status = "success"
 
-    return session.throw_output()
+    return fetch_q.throw_output()

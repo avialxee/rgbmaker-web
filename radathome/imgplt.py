@@ -168,7 +168,8 @@ def overlayo(ri, gi, bi, kind = 'IOU'):
     ri = sqrt(ri, scale_min=np.percentile(np.unique(ri),1.), scale_max=np.percentile(np.unique(ri),100.))
     gi = sqrt(gi, scale_min=np.percentile(np.unique(gi),1.), scale_max=np.percentile(np.unique(gi),100.))
     #gi = log(gi, scale_min=np.percentile(np.unique(gi),0.), scale_max=np.percentile(np.unique(gi),100.),factor=2.85)
-    bi = log(bi, scale_min=np.percentile(np.unique(bi),1.), scale_max=np.percentile(np.unique(bi),100.),factor=3.14)
+    bi = log(bi, scale_min=np.percentile(np.unique(bi), 5.),
+             scale_max=np.percentile(np.unique(bi), 100.), factor=3.15)
     mul_factor = 255/ri.max()
     img = (np.transpose([(ri*mul_factor).astype(np.uint8),(gi*255/gi.max()).astype(np.uint8),(bi*255).astype(np.uint8)], (1, 2, 0)))
 
