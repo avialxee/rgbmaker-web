@@ -13,53 +13,83 @@ import io
 import urllib
 import base64
 from time import perf_counter
+from os import path
 
-
-def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
+def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2, kind='base64'):
     """
-    @form fields:
-        + #### name (Optional) (default=Anonymous) (string)
+    Usage
+    ------
+    >>>> from radathome.fetch import query
+    >>>> 
+
+    Form Fields:
+    ------------
+         
+        name (Optional) (default=Anonymous) (string)
+        -------------------------------------------
+
             Your name will be displayed on the image enabling mentors, professors, 
             fellow students to be able to recognize your work. Credit is important!
 
-        + #### position (Required)
+        position (Required)
+        -------------------
+
             The object name or the coordinates of the object in the FK5 (J2000) system. 
             Ex: "14 09 48.86 -03 02 32.6", M87, NGC1243, without quotes.
 
-        + #### radius (Required) (default = 0.12) (float)
+        radius (Required) (default = 0.12) (float)
+        ------------------------------------------
+
             The size of the image in degrees, this size will be used for the 
             [field of view](https://en.wikipedia.org/wiki/Field_of_view) in the resultant image. 
             For reference, in the night sky, the moon is about 0.52 degrees across.
 
-        + #### imagesopt (default=2)(string)(values=1,2,3)
+        imagesopt (default=2)(string)(values=1,2,3)
+        -------------------------------------------
+
             This dropdown gives you a choice of the composite images you want to create. 
 
-            #### IOU ROR Optical (option = 1)
+            IOU ROR Optical (option = 1)
+            ---------------------------
             
                 _This option returns four images._
 
-                + There are two [ROR](#what-is-iou-ror-and-rgb) 
-                _(Radio (TGSS ADR1) - Optical (DSS2Red) - Radio (NVSS))_ images. 
+                1. There are two [ROR](#what-is-iou-ror-and-rgb) 
+                    (Radio (TGSS ADR1) - Optical (DSS2Red) - Radio (NVSS)) images. 
+                    One with TGSS Contours and another with NVSS Contours. 
                 One with TGSS Contours and another with NVSS Contours. 
-                + The third image is an [IOU](#what-is-iou-ror-and-rgb) 
+                    One with TGSS Contours and another with NVSS Contours. 
+                
+                2. The third image is an [IOU](#what-is-iou-ror-and-rgb) 
+                    _(Infrared (WISE 22) - Optical (DSS2 Red) - Ultraviolet (Galex Near UV))_ 
                 _(Infrared (WISE 22) - Optical (DSS2 Red) - Ultraviolet (Galex Near UV))_ 
-                with TGSS Contours.
-                + The final RGB image is an optical image with 
+                    _(Infrared (WISE 22) - Optical (DSS2 Red) - Ultraviolet (Galex Near UV))_ 
+                    with TGSS Contours.
+
+                3. The final RGB image is an optical image with 
+                    _(DSS2IR - DSS2Red - DSS2Blue)_ 
                 _(DSS2IR - DSS2Red - DSS2Blue)_ 
-                with TGGSS Contours.
+                    _(DSS2IR - DSS2Red - DSS2Blue)_ 
+                    with TGGSS Contours.
             
-            #### Composite Contours on DSS2R  (option = 2)
+            Composite Contours on DSS2R  (option = 2)
+            -----------------------------------------
             
                 _This option returns two images._
 
-                + The first is a [ROR](#what-is-iou-ror-and-rgb) Image with TGSS contours. 
+                1. The first is a [ROR](#what-is-iou-ror-and-rgb) Image with TGSS contours. 
+                    The various symbol seen on the image is the [catalog](https://en.wikipedia.org/wiki/Astronomical_catalog) 
                 The various symbol seen on the image is the [catalog](https://en.wikipedia.org/wiki/Astronomical_catalog) 
-                data of the respective survey.
-                + The second image is a composite image with DSS2Red background and contours of various 
-                radio surveys like TGSS, NVSS, and VLA First (if available).
+                    The various symbol seen on the image is the [catalog](https://en.wikipedia.org/wiki/Astronomical_catalog) 
+                    data of the respective survey.
+
+                2. The second image is a composite image with DSS2Red background and contours of various 
+                    radio surveys like TGSS, NVSS, and VLA First (if available).
 
             
-        + #### archives (default=2)(string)
+        archives (default=1)(string)
+        ----------------------------
+
             This dropdown currently offers access to the NVAS image archive. Selecting this option will 
             return the top 5 results from NVAS (if exists). These can be downloaded as .imfits files (open with DS9) 
             by using save as an option when right-clicked.
@@ -68,7 +98,7 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                   radius=radius, archives=archives, imagesopt=imagesopt)
     name = fetch_q.name
     start = perf_counter()
-    val = fetch_q.return_values()
+    val = fetch_q.submit_query()
     
     level_contour=4
 
@@ -98,15 +128,10 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         plt.subplots_adjust(wspace=0.01, hspace=0.01)
 
         #-------- Saving first plot ------#--#
-        buf = io.BytesIO()
-        fig.savefig(buf, format='png', bbox_inches='tight',
-                    transparent=True, pad_inches=0)
-        buf.seek(0)
-        string = base64.b64encode(buf.read())
-        plt.close()        
+        string = save_fig(fig, kind)
+        plt.close()
         fetch_q.uri.append(
             {'img1': 'data:image/png;base64,' + urllib.parse.quote(string)})
-
 
         #-------- plotting second plot -----#--#
         plt.ioff()
@@ -116,14 +141,10 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
         plt.subplots_adjust(wspace=0.01, hspace=0.01)
 
         #-------- Saving second plot ------#--#
-        buf1 = io.BytesIO()
-        fig1.savefig(buf1, format='png', bbox_inches='tight',
-                    transparent=True, pad_inches=0)
-        buf1.seek(0)
-        string1 = base64.b64encode(buf1.read())
+        string1 = save_fig(fig1, kind)
         plt.close()
         fetch_q.uri.append(
-            {'img2': 'data:image/png;base64,' + urllib.parse.quote(string1)})
+            {'img2': 'data:image/png;base64,' + urllib.parse.quote(str(string1))})
 
         #-------- Output for success -----#--#
         time_taken = perf_counter()-start
@@ -172,7 +193,7 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                         y=1, pad=-16, color="white")
         
             #--- vizier access ---------------#--
-            # TODO: use labels for each patch as 1,2,3 and show table corresponding to that.#
+            # TODO : return table in output
         tgss_viz, nvss_viz = fetch_q.vz_query()
         if tgss_viz is not None:
             tmaj, tmin, tPA, tcen = tgss_viz
@@ -197,7 +218,6 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                     ax1.annotate(i+1, xy=(x,y),
                                  xytext=(0, 0), textcoords="offset points", color="magenta")
                                  #ha="right", va="top")#, **kwar)
-          
                 tgss_catalog = PatchCollection(
                 patch1, edgecolor='magenta', facecolor='None')
                 
@@ -225,8 +245,7 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
                                     ha="right", va="top")#, **kwar)
                 nvss_catalog = PatchCollection(
                     patch2, edgecolor='cyan', facecolor='None')
-                ax1.add_collection(nvss_catalog)
-
+                ax1.add_collection(nvss_catalog)                
         except:
             fetch_q.info = "catalog data missing"
         finally:
@@ -259,11 +278,7 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
             plt.subplots_adjust(wspace=0.01, hspace=0.01)
 
             #-------- Saving final plot ------#--#
-            buf = io.BytesIO()
-            fig.savefig(buf, format='png', bbox_inches='tight',
-                        transparent=True, pad_inches=0)
-            buf.seek(0)
-            string1 = base64.b64encode(buf.read())
+            string1 = save_fig(fig, kind)
             plt.close()
 
             #-------- Output for success -----#--#
@@ -274,3 +289,30 @@ def query(name="", position="", radius=float(0.12), archives=1, imagesopt=2):
             fetch_q.status = "success"
 
     return fetch_q.throw_output()
+
+def save_fig(fig, kind='base64', output='output.jpg'):
+    if kind == 'base64':
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight',
+                    transparent=True, pad_inches=0)
+        buf.seek(0)
+        string = base64.b64encode(buf.read())
+        return string
+    else :
+        newPath = 'output/'+output
+        
+        if path.exists(newPath):
+            numb = 1
+            print(newPath)
+            while path.exists(newPath):
+                newPath = "{0}{2}{1}".format(*path.splitext(newPath) + (numb,))
+                try :
+                    if path.exists(newPath):
+                        numb += 1 
+                except:
+                    pass               
+        fig.savefig(newPath, format=kind, bbox_inches='tight',
+                    pad_inches=0)
+        print("saved {}".format(newPath))
+        return newPath
+

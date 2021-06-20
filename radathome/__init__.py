@@ -49,27 +49,33 @@ class RGBMaker:
         """
         return self.status, self.uri, self.info, self.otext
 
-    def return_values(self):
+    def submit_query(self):
         """
         takes input of name, position, radius, choice of image and arhives 
         to fetch FITS from Skyview and NVAS.        
         """
-        
         ## ------------- Settings ---------------------
         np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
-        #VerifyWarning by astropy for NVSS in 2 
+        #VerifyWarning by astropy for NVSS in imagesopt=2 
         simplefilter('ignore', category=UserWarning)
-
-        self.name, self.c, self.r = self._inp_sanitize()
         _input_svys, _input_sampler = self._sanitize_rgb()
-        self._getNVAS(self.archives)
-        try:
-            hdu_d_list, error = self.getdd(_input_svys, _input_sampler)
-        except:
-            if self.c :
-                self.status, self.info = 'info', 'error fetching data from skyview'
+        self.name, self.c, self.r = self._inp_sanitize()
+        if self.c is not None :
+            self._getNVAS(self.archives)
+            try:
+                hdu_d_list, error = self.getdd(_input_svys, _input_sampler)
+            except:
+                if self.c :
+                    if self.imagesopt == 1 or self.imagesopt == 2:
+                        self.status, self.info = 'info', 'error fetching data from skyview'
+                    else:
+                        self.status, self.info = 'info', 'No images to return'
+                return self.throw_output()
+            return self._arr_rgb(_input_svys, hdu_d_list)
+        else :
+            self.status, self.info = 'warning', 'Please check Coordinates'
             return self.throw_output()
-        return self._arr_rgb(_input_svys, hdu_d_list)
+        
         #return hdu_d_list #DEBUG
 
     def _arr_rgb(self, input_svys, hdu_d_list):
@@ -79,54 +85,60 @@ class RGBMaker:
         @returns: 
             list containing data, range that can be used to plot in matplotlib.
         """
-        for result in hdu_d_list:
-            if not self.wcs:
-                self.wcs = WCS(result[1])
-        _key_svy_dict = list(self.svy_dict('*').keys())
-        _val_svy_dict = list(self.svy_dict('*').values())
-        _svys_res = {}
-        _start = perf_counter()
-        if self.wcs:
-            for i in range(len(input_svys)):
-                _ind_rgb_dict = _val_svy_dict.index(input_svys[i])
-                _svy_sname = _key_svy_dict[_ind_rgb_dict]
-                _svys_res[_svy_sname] = {'data': hdu_d_list[i][0],
-                                         'range': 'value ranges from {:0.4f} to {:0.4f}'.format(hdu_d_list[i][0].min(), hdu_d_list[i][0].max())
-                                         }
-                if _svy_sname == 'tgss' or _svy_sname == 'nvss' or _svy_sname=='first':
-                    self.otext.append(
-                        {input_svys[i]  :  _svys_res[_svy_sname]['range']})
-            
+        _svys_res = None
+        if hdu_d_list is not None:
+            for result in hdu_d_list:
+                if not self.wcs:
+                    self.wcs = WCS(result[1])
+            _key_svy_dict = list(self.svy_dict('*').keys())
+            _val_svy_dict = list(self.svy_dict('*').values())
+            _svys_res = {}
+            _start = perf_counter()
+            if self.wcs:
+                for i in range(len(input_svys)):
+                    _ind_rgb_dict = _val_svy_dict.index(input_svys[i])
+                    _svy_sname = _key_svy_dict[_ind_rgb_dict]
+                    _svys_res[_svy_sname] = {'data': hdu_d_list[i][0],
+                                            'range': 'value ranges from {:0.4f} to {:0.4f}'.format(hdu_d_list[i][0].min(), hdu_d_list[i][0].max())
+                                            }
+                    if _svy_sname == 'tgss' or _svy_sname == 'nvss' or _svy_sname=='first':
+                        self.otext.append(
+                            {input_svys[i]  :  _svys_res[_svy_sname]['range']})
+                
+            else:
+                self.info = "No images found."
+                _time_taken = perf_counter()-_start
+                self.info += ' Time taken:' + str(np.round(_time_taken, 3))+". "
+                self.status = "warning"
+                return self.throw_output()        
+            return _svys_res
         else:
-            self.info = "No images found."
-            _time_taken = perf_counter()-_start
-            self.info += ' Time taken:' + str(np.round(_time_taken, 3))+". "
-            self.status = "warning"
+            self.info = "No data fetched from skyview."
             return self.throw_output()
-        return _svys_res
 
     def _sanitize_rgb(self):
         """
         returns RGB surveys as array dtype=<U13 and sampler as list to be used by getdd().
         """
         _rgbs = []
-        
-        if int(self.imagesopt) == 1 and self.c:
-            _rgb1 = self.rgb_dict('ror')
-            _rgb2 = self.rgb_dict('iou')
-            _rgb3 = self.rgb_dict('optical')
-            _rgbs = list(set(_rgb1['rgb']) | set(
-                _rgb2['rgb']) | set(_rgb3['rgb']))
+        _sampler = [None]
+        if (self.c is not None) and (self.imagesopt == 1 or self.imagesopt == 2):
+            if int(self.imagesopt) == 1 :
+                _rgb1 = self.rgb_dict('ror')
+                _rgb2 = self.rgb_dict('iou')
+                _rgb3 = self.rgb_dict('optical')
+                _rgbs = list(set(_rgb1['rgb']) | set(
+                    _rgb2['rgb']) | set(_rgb3['rgb']))
 
-        elif int(self.imagesopt) == 2 and self.c:
-            _rgb1 = self.rgb_dict('single')
-            _rgb2 = self.rgb_dict('ror')
-            _rgbs = list(set(_rgb1['rgb']) | set(_rgb2['rgb']))
-        _sampler = np.array([None]*len(_rgbs))
-        indices = np.where(np.array(_rgbs) == 'NVSS')
-        
-        if len(indices[0]):
-            _sampler[indices] = 'Lanczos3'
+            elif int(self.imagesopt) == 2 :
+                _rgb1 = self.rgb_dict('single')
+                _rgb2 = self.rgb_dict('ror')
+                _rgbs = list(set(_rgb1['rgb']) | set(_rgb2['rgb']))
+            _sampler = np.array([None]*len(_rgbs))
+            indices = np.where(np.array(_rgbs) == 'NVSS')
+            
+            if len(indices[0]):
+                _sampler[indices] = 'Lanczos3'
         return _rgbs, _sampler
 
     def getdd(self, input_svys, sampler):
@@ -284,7 +296,6 @@ class RGBMaker:
                     _center_tgss = coordinates.SkyCoord(ra=_tra, dec=_tdec)
                     _center_tgss_px = self.wcs.world_to_pixel(_center_tgss)
                     _tgss_viz = [_tMaj, _tMin, _tPA, _center_tgss_px]
-
                 finally:
                     _nviz = Vizier(columns=self.vzc_dict('nvss')).query_region(
                         self.c,self.r, catalog=self.vzb_dict('nvss'))
@@ -375,7 +386,7 @@ class RGBMaker:
 #    def __init__(self, name, position, radius, archives, imagesopt, px):
 #        super().__init__(name=name, position=position, radius=radius, archives=archives, imagesopt=imagesopt, px=px)
 
-#ins = RGBMaker()
-#print(ins.c)
+#ins = RGBMaker(position='speca', archives=2, imagesopt=3)
+#print(ins.submit_query())
 #print(ins.return_values())
 ##ins._sanitize_rgb()

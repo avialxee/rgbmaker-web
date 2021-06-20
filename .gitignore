@@ -137,3 +137,4 @@ template/navbar.html
 template/home.html
 template/login.html
 db.sqlite3
+output/
