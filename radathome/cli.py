@@ -24,5 +24,3 @@ else :
             
         except:
             print(help_o())
-
-
