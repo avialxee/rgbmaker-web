@@ -300,12 +300,12 @@ def save_fig(fig, kind='base64', output='output.jpg'):
         return string
     else :
         newPath = 'output/'+output
-        
+        opt = newPath
         if path.exists(newPath):
             numb = 1
-            print(newPath)
             while path.exists(newPath):
-                newPath = "{0}{2}{1}".format(*path.splitext(newPath) + (numb,))
+                newPath = "{0}_{2}{1}".format(
+                    *path.splitext(opt) + (numb,))
                 try :
                     if path.exists(newPath):
                         numb += 1 
