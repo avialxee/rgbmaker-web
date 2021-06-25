@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from radathome.fetch import query as qu
+from rgbmaker.fetch import query as qu
 from scripts import forms #,smv
 
 from flask import Flask, redirect, url_for, render_template, request, jsonify
