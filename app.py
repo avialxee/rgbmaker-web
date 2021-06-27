@@ -12,7 +12,6 @@ import sqlite3
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
-import psycopg2
 
 db_url = os.environ['DATABASE_URL'].replace("postgres", "postgresql")
 #db_url='sqlite:///db.sqlite3'
