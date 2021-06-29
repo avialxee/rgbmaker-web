@@ -13,8 +13,8 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 
-db_url = os.environ['DATABASE_URL'].replace("postgres", "postgresql")
-#db_url='sqlite:///db.sqlite3'
+#db_url = os.environ['DATABASE_URL'].replace("postgres", "postgresql")
+db_url='sqlite:///db.sqlite3'
 def make_celery(app):
     celery = Celery(
         name='tasks',
@@ -22,8 +22,8 @@ def make_celery(app):
         backend='db+'+db_url,
         result_backend='db+'+db_url,
         #cache='db+sqlite:///db.sqlite3',
-        #broker='amqp://guest:@localhost:5672//',
-        broker=os.environ['CLOUDAMQP_URL']
+        broker='amqp://guest:@172.19.0.2:5672//',
+        #broker=os.environ['CLOUDAMQP_URL']
     )
     celery.conf.update(app.config)
 

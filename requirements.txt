@@ -1,4 +1,6 @@
-Flask
+# To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
+flask==1.1.2
+gunicorn==20.0.4
 WTForms
 requests
 ipywidgets
@@ -6,12 +8,9 @@ numpy
 matplotlib
 astropy
 astroquery
-scipy
-gunicorn
 flask_restful
 flask_cors
 celery==5.0.5
 psycopg2-binary 
 sqlalchemy
-regions
 rgbmaker==0.0.4.6

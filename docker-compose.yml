@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3
+    ports: 
+      - 5672:5672
+
+  web:
+      image: rgbmakerweb
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      depends_on:
+        - "rabbit"
+      ports:
+        - 5000:5000
+      links: [rabbit]
+
+  worker:
+      build:
+        context: "."
+        args:
+          - "FLASK_ENV=${FLASK_ENV:-developement}"
+      command: celery -A app.celery worker -l INFO --concurrency 2 --without-gossip --without-mingle --without-heartbeat
+      depends_on:
+        - "rabbit"
+      restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+      stop_grace_period: "${DOCKER_STOP_GRACE_PERIOD:-3s}"
+      
