@@ -24,6 +24,7 @@ def make_celery(app):
         #cache='db+sqlite:///db.sqlite3',
         #broker='amqp://guest:@localhost:5672//',
         broker=os.environ['CLOUDAMQP_URL']
+        #broker='db+'+db_url,
     )
     celery.conf.update(app.config)
 
