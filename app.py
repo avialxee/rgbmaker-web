@@ -22,7 +22,7 @@ def make_celery(app):
         backend='db+'+db_url,
         result_backend='db+'+db_url,
         #cache='db+sqlite:///db.sqlite3',
-        broker='amqp://guest:@127.0.0.1:5672//',
+        broker='amqp://guest:guest@rabbit//',
         #broker=os.environ['CLOUDAMQP_URL']
     )
     celery.conf.update(app.config)
@@ -180,4 +180,4 @@ def checkRecord(tid):
         
 # ======== Main ============================================================== #
 if __name__ == "__main__":
-    app.run(debug=False, use_reloader=True)
+    app.run(debug=True, use_reloader=True, port=5000)

@@ -112,12 +112,8 @@
     </div>
 <article class="message is-dark tile">
     <div id="skv-output-status" class="message-body" style="display: None;">
-    
-        
     </div>
     <div id="skv-output-otext" class="message-body" style="display: None;">
-    
-        
     </div>
 </article>
 
@@ -138,7 +134,7 @@
 <script type=text/javascript>
 $LOGIN="{{url_for('login')}}" 
 //$URL = 'https://sky.radathomeindia.org'
-$URL = "{{url_for('/')}}"
+$URL = $LOGIN
 </script>
  <script src="{{url_for('static', filename='js/scripts.js')}}"></script>
 {% endblock %}

@@ -1,14 +1,12 @@
-version: '3.4'
+version: '3.5'
+
+networks:
+  app-rgbmaker:
+    driver: bridge
 
 services:
-  
-  rabbit:
-    image: rabbitmq:3
-    ports: 
-      - 5672:5672
-
   web:
-      image: rgbmakerweb
+      image: rgbmakerweb:latest
       build:
         context: .
         dockerfile: ./Dockerfile
@@ -16,16 +14,19 @@ services:
         - "rabbit"
       ports:
         - 5000:5000
-      links: [rabbit]
+      networks:
+        - app-rgbmaker
 
   worker:
-      build:
-        context: "."
-        args:
-          - "FLASK_ENV=${FLASK_ENV:-developement}"
-      command: celery -A app.celery worker -l INFO --concurrency 2 --without-gossip --without-mingle --without-heartbeat
       depends_on:
         - "rabbit"
-      restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-      stop_grace_period: "${DOCKER_STOP_GRACE_PERIOD:-3s}"
-      
+      networks:
+        - app-rgbmaker
+      command: celery -A app.celery worker -l INFO --concurrency 2 --without-gossip --without-mingle --without-heartbeat
+
+  rabbit:
+      image: rabbitmq:latest
+      ports: 
+        - 5672:5672
+      networks:
+        - app-rgbmaker
