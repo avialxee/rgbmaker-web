@@ -3,7 +3,7 @@
 from rgbmaker.fetch import query as qu
 from scripts import forms #,smv
 
-from flask import Flask, redirect, url_for, render_template, request, jsonify
+from flask import Flask, redirect, url_for, render_template, request, jsonify, send_from_directory
 import os
 from flask_cors import CORS
 from flask_restful import reqparse, abort, Api, Resource
@@ -50,7 +50,23 @@ CORS(app)
 
 celery = make_celery(app)
 
-spidx_file=url_for('app.static', filename='media/spidxcat_v1.1b.fits')
+@app.route('/spidx', methods=['GET', 'POST'])
+def getspidx_file():
+    return os.path.join(url_for('app.static',filename='/media/spidxcat_v1.1b.fits'), '')
+    #send_from_directory(
+            #os.path.join(url_for('app.static',filename='/media/spidxcat_v1.1b.fits'), ''),
+            #filename
+        #)
+
+try:
+    spidx_file=url_for('app.static',filename='/media/spidxcat_v1.1b.fits')
+except:
+    try:
+        dirname = os.path.dirname(__file__)
+        spidx_file = os.path.join(dirname, 'static/media/spidxcat_v1.1b.fits')
+    except:
+        spidx_file = getspidx_file()
+    
 @celery.task(bind=True)
 def get_image(self, arg):
     info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
