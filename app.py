@@ -54,7 +54,7 @@ celery = make_celery(app)
 @celery.task(bind=True)
 def get_image(self, arg):
     info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
-                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
+                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'], spidx_file=url_for('static', filename='media/spidxcat_v1.1b.fits'))
     self.update_state(state='PROGRESS' or info,
                       meta={'txt': txt, 'otext': otext,
                             'uri': uri})
