@@ -50,11 +50,11 @@ CORS(app)
 
 celery = make_celery(app)
 
-
+spidx_file=url_for('app.static', filename='media/spidxcat_v1.1b.fits')
 @celery.task(bind=True)
 def get_image(self, arg):
     info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
-                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'], spidx_file=url_for('static', filename='media/spidxcat_v1.1b.fits'))
+                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'], spidx_file=spidx_file)
     self.update_state(state='PROGRESS' or info,
                       meta={'txt': txt, 'otext': otext,
                             'uri': uri})
