@@ -19,9 +19,8 @@
                     title="Enter target's position" data-placement="top"
                     data-content="Enter Astronomical Object's name or coordinate. ex: Pleiades, 3C 33.1, 14 09 48.86 -03 02 32.6">
             </div>
-            {{ url_for('app.static', filename='media/spidxcat_v1.1b.fits') }}
             <div class="form-group">
-
+                
                 <label for="radius">Size (in degrees)</label>
                 <input id="radius" name="radius" class="form-control" placeholder="Radius" required type="number"
                     step="0.01" value="0.12" max="2.0" data-toggle="popover" data-trigger="focus" data-placement="top"

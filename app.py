@@ -5,6 +5,7 @@ from scripts import forms #,smv
 
 from flask import Flask, redirect, url_for, render_template, request, jsonify, send_from_directory
 import os
+import pathlib
 from flask_cors import CORS
 from flask_restful import reqparse, abort, Api, Resource
 from celery import Celery
@@ -50,22 +51,22 @@ CORS(app)
 
 celery = make_celery(app)
 
-@app.route('/spidx', methods=['GET', 'POST'])
-def getspidx_file():
-    return os.path.join(url_for('app.static',filename='/media/spidxcat_v1.1b.fits'), '')
+@app.route('/file/<path:filename>', methods=['GET', 'POST'])
+def get_file(filename):
+    return send_from_directory(pathlib.Path('__file__').parent.resolve() / "static" / "media", filename)
     #send_from_directory(
             #os.path.join(url_for('app.static',filename='/media/spidxcat_v1.1b.fits'), ''),
             #filename
         #)
 
 try:
-    spidx_file=url_for('app.static',filename='/media/spidxcat_v1.1b.fits')
+    spidx_file = url_for('get_file', filename='spidxcat_v1.1b.fits')
+    
 except:
-    try:
-        dirname = os.path.dirname(__file__)
-        spidx_file = os.path.join(dirname, 'static/media/spidxcat_v1.1b.fits')
+    try :
+        spidx_file = pathlib.Path('__file__').parent.resolve() / "static" / "media" / "spidxcat_v1.1b.fits"
     except:
-        spidx_file = getspidx_file()
+        spidx_file = None
     
 @celery.task(bind=True)
 def get_image(self, arg):
