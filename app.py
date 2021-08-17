@@ -51,7 +51,7 @@ CORS(app)
 
 celery = make_celery(app)
 
-@app.route('/file/<path:filename>', methods=['GET', 'POST'])
+@app.route('/file/<path:filename>', methods=['GET'])
 def get_file(filename):
     return send_from_directory(pathlib.Path('__file__').parent.resolve() / "static" / "media", filename)
     #send_from_directory(
@@ -59,20 +59,20 @@ def get_file(filename):
             #filename
         #)
 
-try:
-    spidx_file = url_for('get_file', filename='spidxcat_v1.1b.fits')
-    
-except:
-    try :
-        spidx_file = pathlib.Path('__file__').parent.resolve() / "static" / "media" / "spidxcat_v1.1b.fits"
-    except:
-        spidx_file = None
-        
+#try:
+#    spidx_file = url_for('get_file', filename='spidxcat_v1.1b.fits')
+#    
+#except:
+#    try :
+#        spidx_file = pathlib.Path('__file__').parent.resolve() / "static" / "media" / "spidxcat_v1.1b.fits"
+#    except:
+#        spidx_file = None
+#
     
 @celery.task(bind=True)
 def get_image(self, arg):
     info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
-                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'], spidx_file=spidx_file)
+                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
     self.update_state(state='PROGRESS' or info,
                       meta={'txt': txt, 'otext': otext,
                             'uri': uri})
