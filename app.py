@@ -19,7 +19,6 @@ db_url = os.environ['DATABASE_URL'].replace("postgres", "postgresql")
 def make_celery(app):
     celery = Celery(
         name='tasks',
-        #backend=app.config["CELERY_BACKEND_URL"],
         backend='db+'+db_url,
         result_backend='db+'+db_url,
         #cache='db+sqlite:///db.sqlite3',
@@ -38,13 +37,9 @@ def make_celery(app):
     return celery
 
 app = Flask(__name__)
-#app.config['CELERY_RESULT_BACKEND']=""
 api = Api(app)
 app.secret_key = os.urandom(12)  # Generic key for dev purposes only
 CORS(app)
-# Heroku
-#from flask_heroku import Heroku
-#heroku = Heroku(app)
 
 
 # ======== Celery =========================================================== #
@@ -54,10 +49,7 @@ celery = make_celery(app)
 @app.route('/file/<path:filename>', methods=['GET'])
 def get_file(filename):
     return send_from_directory(pathlib.Path('__file__').parent.resolve() / "static" / "media", filename)
-    #send_from_directory(
-            #os.path.join(url_for('app.static',filename='/media/spidxcat_v1.1b.fits'), ''),
-            #filename
-        #)
+   
 
 #try:
 #    spidx_file = url_for('get_file', filename='spidxcat_v1.1b.fits')
