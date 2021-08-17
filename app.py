@@ -67,6 +67,7 @@ except:
         spidx_file = pathlib.Path('__file__').parent.resolve() / "static" / "media" / "spidxcat_v1.1b.fits"
     except:
         spidx_file = None
+        
     
 @celery.task(bind=True)
 def get_image(self, arg):
