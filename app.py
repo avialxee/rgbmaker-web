@@ -64,7 +64,7 @@ except:
 @celery.task(bind=True)
 def get_image(self, arg):
     info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
-                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'], spidx_file=spidx_file)
+                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
     self.update_state(state='PROGRESS' or info,
                       meta={'txt': txt, 'otext': otext,
                             'uri': uri})
