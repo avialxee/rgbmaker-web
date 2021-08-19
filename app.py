@@ -106,7 +106,7 @@ def query():
         images=request.form['images']
         
         if qform.validate():
-            info, uri, txt, otext = qu(name,position,radius,archives,images)
+            info, uri, txt, otext = qu(name,position,radius,archives,images, spidx_file=spidx_file))
             try :
                 return jsonify([info,txt,uri,otext]) 
             except Exception as e :
