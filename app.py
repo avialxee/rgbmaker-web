@@ -51,20 +51,20 @@ def get_file(filename):
     return send_from_directory(pathlib.Path('__file__').parent.resolve() / "static" / "media", filename)
    
 
-#try:
-#    spidx_file = url_for('get_file', filename='spidx.fits')
-#   
-#except:
-#    try :
-#        spidx_file = pathlib.Path('__file__').parent.resolve() / "static" / "media" / "spidx.fits"
-#    except:
-#        spidx_file = None
+try:
+    spidx_file = url_for('get_file', filename='spidx.fits')
+   
+except:
+    try :
+        spidx_file = pathlib.Path('__file__').parent.resolve() / "static" / "media" / "spidx.fits"
+    except:
+        spidx_file = None
 
     
 @celery.task(bind=True)
 def get_image(self, arg):
     info, uri, txt, otext = qu(name=arg['name'], position=arg['position'],
-                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'])
+                                      radius=arg['radius'], imagesopt=arg['imagesopt'], archives=arg['archives'], spidx_file=spidx_file)
     self.update_state(state='PROGRESS' or info,
                       meta={'txt': txt, 'otext': otext,
                             'uri': uri})
