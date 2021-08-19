@@ -10,8 +10,8 @@ scipy
 gunicorn
 flask_restful
 flask_cors
-celery==5.0.5
+celery
 psycopg2-binary 
 sqlalchemy
 regions
-rgbmaker==0.0.4.7.6
+rgbmaker==0.0.4.7.7
