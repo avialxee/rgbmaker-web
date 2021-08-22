@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from rgbmaker.fetch import query as qu
+import base64
+from rgbmaker.fetch import query as qu, save_fig
+from rgbmaker.imgplt import pl_powerlawsi
 from scripts import forms #,smv
+
+import urllib
 
 from flask import Flask, redirect, url_for, render_template, request, jsonify, send_from_directory
 import os
@@ -71,6 +75,28 @@ def get_image(self, arg):
     return {'info': info, 'message': txt, 'url': uri, 'brieftext': otext}
 
 # ======== Routing =========================================================== #
+
+@app.route('/powerlaw', methods=['GET', 'POST'])
+def powerlaw():
+    
+    tgss = float(request.args.get('tgss'))
+    nvss = float(request.args.get('nvss'))
+    tgss_e = float(request.args.get('tgss_e'))
+    nvss_e = float(request.args.get('nvss_e'))
+    rest = bool(request.args.get('rest'))
+    
+    S = [tgss, nvss]
+    S_e = [tgss_e, nvss_e]
+    plt, fig = pl_powerlawsi(S,S_e)
+    string = save_fig(plt,fig, kind='base64')
+             
+    #-------- Output for success -----#--#
+    if rest:
+        return {'img': 'data:image/png;base64,' + urllib.parse.quote(string)}, 200
+    else:
+        return f'<img src="data:image/png;base64,{urllib.parse.quote(string)}" />'
+
+
 # -------- Login ------------------------------------------------------------- #
 @app.route('/', methods=['GET', 'POST'])
 def login():
