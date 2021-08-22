@@ -78,24 +78,29 @@ def get_image(self, arg):
 
 @app.route('/powerlaw', methods=['GET', 'POST'])
 def powerlaw():
-    
-    tgss = float(request.args.get('tgss'))
-    nvss = float(request.args.get('nvss'))
-    tgss_e = float(request.args.get('tgss_e'))
-    nvss_e = float(request.args.get('nvss_e'))
-    rest = bool(request.args.get('rest'))
-    
-    S = [tgss, nvss]
-    S_e = [tgss_e, nvss_e]
-    plt, fig = pl_powerlawsi(S,S_e)
-    string = save_fig(plt,fig, kind='base64')
-             
-    #-------- Output for success -----#--#
-    if rest:
-        return {'img': 'data:image/png;base64,' + urllib.parse.quote(string)}, 200
-    else:
-        return f'<img src="data:image/png;base64,{urllib.parse.quote(string)}" />'
-
+    try :
+        tgss = float(request.args.get('tgss'))
+        nvss = float(request.args.get('nvss'))
+        tgss_e = float(request.args.get('tgss_e'))
+        nvss_e = float(request.args.get('nvss_e'))
+        rest = bool(request.args.get('rest'))
+        
+        S = [tgss, nvss]
+        S_e = [tgss_e, nvss_e]
+        plt, fig = pl_powerlawsi(S,S_e)
+        string = save_fig(plt,fig, kind='base64')
+                
+        #-------- Output for success -----#--#
+        if rest:
+            return {'img': 'data:image/png;base64,' + urllib.parse.quote(string)}, 200
+        else:
+            return f'<img src="data:image/png;base64,{urllib.parse.quote(string)}" />'
+    except:
+        htmls = '<div class="alert alert-danger" role="alert"><h4 class="alert-heading"> Error!</h4><p> Please check inputs. \
+        </p><hr> \
+        <p class="mb-0"> :( </p> \
+        </div>'
+        return f'{htmls}'
 
 # -------- Login ------------------------------------------------------------- #
 @app.route('/', methods=['GET', 'POST'])
