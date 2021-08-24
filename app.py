@@ -79,10 +79,15 @@ def get_image(self, arg):
 @app.route('/powerlaw', methods=['GET', 'POST'])
 def powerlaw():
     try :
+        
         tgss = float(request.args.get('tgss'))
         nvss = float(request.args.get('nvss'))
-        tgss_e = float(request.args.get('tgss_e'))
-        nvss_e = float(request.args.get('nvss_e'))
+        
+        try:
+            tgss_e = float(request.args.get('tgss_e'))
+            nvss_e = float(request.args.get('nvss_e'))
+        except:
+            tgss_e, nvss_e = tgss*0.10, nvss*0.10
         rest = bool(request.args.get('rest'))
         
         S = [tgss, nvss]
