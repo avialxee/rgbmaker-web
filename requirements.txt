@@ -14,4 +14,4 @@ celery
 psycopg2-binary 
 sqlalchemy
 regions
-rgbmaker==0.0.4.7.8
+rgbmaker==0.0.4.7.9
