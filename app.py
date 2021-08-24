@@ -84,12 +84,15 @@ def powerlaw():
         nvss = float(request.args.get('nvss'))
         
         try:
-            tgss_e = float(request.args.get('tgss_e'))
+            tgss_e = float(request.args.get('tgss_e'))            
+        except:
+            tgss_e = tgss*0.10
+        try:
             nvss_e = float(request.args.get('nvss_e'))
         except:
-            tgss_e, nvss_e = tgss*0.10, nvss*0.10
-        rest = bool(request.args.get('rest'))
+            nvss_e = nvss*0.10
         
+        rest = bool(request.args.get('rest'))
         S = [tgss, nvss]
         S_e = [tgss_e, nvss_e]
         plt, fig = pl_powerlawsi(S,S_e)
