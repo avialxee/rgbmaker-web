@@ -1,5 +1,5 @@
 Flask
-WTForms
+WTForms==2.3.3
 requests
 ipywidgets
 numpy
