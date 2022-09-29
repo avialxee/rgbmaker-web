@@ -129,6 +129,7 @@
 {% endblock %}
 {% block scripts %}
 <script type=text/javascript> $LOGIN="{{url_for('login')}}" 
-    $URL = "{{request.root_url}}"
+    // $URL = "{{request.root_url}}"
+    $URL = "https://sky.radathomeindia.org"
     </script> <script src="{{url_for('static', filename='js/scripts.js')}}"></script>
 {% endblock %}
