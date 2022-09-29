@@ -158,23 +158,43 @@ def query():
 
     return render_template('fetch.html', form=qform)
 
+##-----------==============         Alternative API for RGBMaker       ========-----------##
+@app.route('/api', methods=['GET', 'POST'])
+def altapi():
+    try :
+        if request.method=='GET':
+            return redirect(url_for('query'))
+        if request.method=='POST':
+            arg={'name':str(request.form['name']),
+            'position':str(request.form['position']),
+            'radius':str(request.form['radius']),
+            'imagesopt':str(request.form['imagesopt']),
+            'archives':str(request.form['archives'])}
+            
+            task = get_image.delay(arg)
+            return {'Location': url_for('taskstatus', idv=task.id)}, 202
+    except:
+        return 'ERROR'
+
+
 ##-----------==============         API for accessing RGBMaker       ========-----------##
 
-parse = reqparse.RequestParser()
-parse.add_argument('position')
-parse.add_argument('radius')
-parse.add_argument('imagesopt')
-parse.add_argument('archives')
-parse.add_argument('name')
+# parse = reqparse.RequestParser()
+# parse.add_argument('name')
+# parse.add_argument('position')
+# parse.add_argument('radius')
+# parse.add_argument('imagesopt')
+# parse.add_argument('archives')
 
-class RGBMaker(Resource):
-    def post(self):
-        arg = parse.parse_args()
-        task = get_image.delay(arg)
-        return {'Location': url_for('taskstatus', idv=task.id)}, 202
-    def get(self):
-        return redirect(url_for('query'))
-api.add_resource(RGBMaker, '/api')
+# class RGBMaker(Resource):
+#     def post(self):
+#         arg = parse.parse_args()
+#         task = get_image.delay(arg)
+#         return {'Location': url_for('taskstatus', idv=task.id)}, 202
+#     def get(self):
+#         return redirect(url_for('query'))
+# api.add_resource(RGBMaker, '/api')
+
 
 
 # ------------========------------ SQL function ---------=========---------#
