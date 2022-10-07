@@ -16,3 +16,4 @@ sqlalchemy
 regions==0.5
 rgbmaker==0.0.5.0.3
 amqp
+importlib-metadata==4.13.0
