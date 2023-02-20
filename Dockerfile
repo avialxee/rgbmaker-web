@@ -28,5 +28,5 @@ ENV FLASK_ENV production
 EXPOSE 5000
 
 # Set the entry point for the container to start RabbitMQ and run the Flask app with gunicorn and start celery worker
-ENTRYPOINT ["service", "rabbitmq-server", "start", "&&", "gunicorn", "-b", "0.0.0.0:5000", "app:app", "--workers", "1", "--timeout", "3600", "--keep-alive", "180", "--preload", "&&", "celery", "-A", "app.celery", "worker", "--loglevel=INFO", "--concurrency=1", "--time-limit=3600", "-Ofair"]
+ENTRYPOINT ["service", "rabbitmq-server", "start", "&&", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000", "--workers", "1", "--timeout-keep-alive", "180", "--reload", "--log-level", "info", "&&", "celery", "-A", "app.celery", "worker", "--loglevel=INFO", "--concurrency=1", "--time-limit=3600", "-Ofair"]
 
